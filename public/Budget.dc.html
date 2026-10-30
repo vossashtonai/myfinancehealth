@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="padding:28px 32px 48px;display:flex;flex-direction:column;gap:20px;">
+  <section style="position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;overflow:hidden;">
+    <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+    <div style="display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:24px;align-items:end;">
+      <div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);">October budget</div>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-top:12px;">
+          <span style="font-family:'Playfair Display',serif;font-size:48px;font-weight:500;font-variant-numeric:tabular-nums lining-nums;">{{ spentText }}</span>
+          <span style="font-size:15px;color:var(--mute);font-variant-numeric:tabular-nums;">of {{ budgetText }}</span>
+        </div>
+      </div>
+      <div><div style="font-size:12px;color:var(--mute);margin-bottom:6px;">Remaining</div><div style="font-size:22px;font-weight:500;font-variant-numeric:tabular-nums;color:{{ remColor }};">{{ remText }}</div></div>
+      <div><div style="font-size:12px;color:var(--mute);margin-bottom:6px;">Categories</div><div style="display:flex;gap:12px;font-size:14px;">
+        <span style="display:flex;align-items:center;gap:5px;color:var(--neg);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>{{ overN }} over</span>
+        <span style="display:flex;align-items:center;gap:5px;color:var(--goldInk);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"></path></svg>{{ nearN }} near</span>
+        <span style="display:flex;align-items:center;gap:5px;color:var(--pri);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>{{ okN }} on track</span>
+      </div></div>
+      <div><div style="font-size:12px;color:var(--mute);margin-bottom:6px;">vs September</div><div style="font-size:22px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--pri);">−$46.15</div></div>
+    </div>
+    <div style="position:relative;height:10px;margin-top:24px;border-radius:999px;background:var(--track);">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:{{ totalW }};border-radius:999px;background:{{ totalBar }};transition:width .4s;"></div>
+      <div style="position:absolute;left:96.8%;top:-4px;width:2px;height:18px;border-radius:1px;background:var(--ink);opacity:.5;" title="Today: day 30 of 31"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums;"><span>{{ totalPct }} used</span><span>Day 30 of 31</span></div>
+  </section>
+
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div style="display:flex;padding:3px;border-radius:10px;background:var(--raised);border:1px solid var(--line);">
+      <button onClick="{{ setMonth }}" style="height:32px;padding:0 14px;border:0;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;background:{{ mBg }};color:{{ mColor }};">This month</button>
+      <button onClick="{{ setCompare }}" style="height:32px;padding:0 14px;border:0;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;background:{{ cBg }};color:{{ cColor }};">Compare with September</button>
+    </div>
+    <span style="font-size:13px;color:var(--mute);">Click any limit to edit it</span>
+    <div style="flex:1;"></div>
+    <button onClick="{{ exportCsv }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;" style-hover="border-color:var(--gold);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
+      Export CSV
+    </button>
+  </div>
+
+  <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);overflow:hidden;">
+    <div style="display:grid;grid-template-columns:minmax(0,1.4fr) 130px 120px 120px minmax(0,1.6fr) 130px;gap:18px;padding:14px 24px;border-bottom:1px solid var(--line);background:var(--raised);font-size:12px;color:var(--mute);">
+      <span>Category</span><span style="text-align:right;">Budgeted</span><span style="text-align:right;">Spent</span><span style="text-align:right;">{{ col4 }}</span><span>Progress</span><span style="text-align:right;">Status</span>
+    </div>
+    <sc-for list="{{ rows }}" as="r" hint-placeholder-count="11">
+      <div style="display:grid;grid-template-columns:minmax(0,1.4fr) 130px 120px 120px minmax(0,1.6fr) 130px;gap:18px;align-items:center;padding:13px 24px;border-bottom:1px solid var(--line);font-size:14px;background:{{ r.rowBg }};">
+        <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+          <div style="flex:none;width:32px;height:32px;border-radius:9px;background:var(--raised);color:var(--mute);display:grid;place-items:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.icon }}"></path></svg></div>
+          <span style="font-weight:500;">{{ r.name }}</span>
+        </div>
+        <div style="text-align:right;">
+          <sc-if value="{{ r.editing }}">
+            <input value="{{ r.draft }}" onChange="{{ r.onDraft }}" onBlur="{{ r.commit }}" onKeyDown="{{ r.key }}" autofocus="autofocus" style="width:100px;height:32px;padding:0 8px;text-align:right;border-radius:8px;border:1px solid var(--gold);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;font-variant-numeric:tabular-nums;outline:none;">
+          </sc-if>
+          <sc-if value="{{ r.notEditing }}">
+            <button onClick="{{ r.edit }}" title="Edit limit" style="all:unset;cursor:text;padding:5px 8px;border-radius:7px;border:1px dashed var(--line);font-variant-numeric:tabular-nums;" style-hover="border-color:var(--gold);">{{ r.limit }}</button>
+          </sc-if>
+        </div>
+        <span style="text-align:right;font-variant-numeric:tabular-nums;">{{ r.spent }}</span>
+        <span style="text-align:right;font-variant-numeric:tabular-nums;color:{{ r.c4Color }};">{{ r.c4 }}</span>
+        <div style="height:6px;border-radius:999px;background:var(--track);overflow:hidden;"><div style="height:100%;width:{{ r.w }};border-radius:999px;background:{{ r.bar }};transition:width .4s;"></div></div>
+        <span style="display:flex;align-items:center;justify-content:flex-end;gap:5px;font-size:12px;font-weight:500;color:{{ r.sColor }};font-variant-numeric:tabular-nums;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.sIcon }}"></path></svg>{{ r.label }}
+        </span>
+      </div>
+    </sc-for>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const IC = {
+  Rent: "M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z",
+  Groceries: "M8 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM19 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM2 2h3l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6",
+  'Dining Out': "M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 2v2M10 2v2M14 2v2",
+  Transport: "M3 22h12M4 9h10M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0V9.83a2 2 0 0 0-.59-1.42L18 5",
+  'Utilities & Internet': "M13 2 3 14h9l-1 8 10-12h-9z",
+  Phone: "M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM12 18h.01",
+  Subscriptions: "M2 7h20v15H2zM17 2l-5 5-5-5",
+  'Health & Fitness': "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z",
+  Shopping: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0",
+  Entertainment: "M2 6h20v12H2zM10 9l5 3-5 3z",
+  Insurance: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+};
+const ST = { over: "M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z", near: "M5 12h14", ok: "M20 6 9 17l-5-5", fixed: "M5 11h14v11H5zM7 11V7a5 5 0 0 1 10 0v4" };
+const DATA = [
+  ['Rent',2400,2400,2400,true],['Groceries',650,725.85,668],['Dining Out',380,342,417],['Transport',220,212,236],['Utilities & Internet',210,206,214],
+  ['Phone',65,65,65,true],['Subscriptions',95,95,95,true],['Health & Fitness',140,140,142],['Shopping',180,180,164],['Entertainment',120,108,119],['Insurance',90,90,90,true]
+];
+const m = (n, d) => (n < 0 ? '−' : '') + '$' + Math.abs(n).toLocaleString('en-AU', { minimumFractionDigits: d ?? (n % 1 ? 2 : 0), maximumFractionDigits: 2 });
+
+class Component extends DCLogic {
+  state = { limits: Object.fromEntries(DATA.map(d => [d[0], d[1]])), editing: null, draft: '', compare: false };
+  commit(name) {
+    const v = parseFloat(String(this.state.draft).replace(/[,$]/g, ''));
+    this.setState(s => ({ editing: null, limits: v > 0 ? { ...s.limits, [name]: v } : s.limits }));
+    if (v > 0 && v !== this.state.limits[name]) this.props.onToast && this.props.onToast(`${name} limit set to ${m(v)}`);
+  }
+  renderVals() {
+    const s = this.state;
+    let over = 0, near = 0, ok = 0, totB = 0, totS = 0;
+    const rows = DATA.map(([name, _l, spent, sep, fixed]) => {
+      const limit = s.limits[name]; totB += limit; totS += spent;
+      const r = spent / limit;
+      const kind = r > 1.0001 ? 'over' : fixed ? 'fixed' : r >= 0.9 ? 'near' : 'ok';
+      if (kind === 'over') over++; else if (kind === 'near') near++; else ok++;
+      const delta = spent - sep;
+      return {
+        name, icon: IC[name], limit: m(limit), spent: m(spent),
+        c4: s.compare ? (delta === 0 ? '—' : (delta > 0 ? '+' : '−') + m(Math.abs(delta)).replace('−', '')) : m(limit - spent),
+        c4Color: s.compare ? (delta > 0 ? 'var(--neg)' : delta < 0 ? 'var(--pri)' : 'var(--mute)') : (limit - spent < 0 ? 'var(--neg)' : 'var(--ink)'),
+        w: Math.min(100, r * 100).toFixed(1) + '%',
+        bar: kind === 'over' ? 'var(--neg)' : kind === 'near' ? 'var(--gold)' : kind === 'fixed' ? 'var(--mute)' : 'var(--pri)',
+        sColor: kind === 'over' ? 'var(--neg)' : kind === 'near' ? 'var(--goldInk)' : kind === 'fixed' ? 'var(--mute)' : 'var(--pri)',
+        sIcon: ST[kind], label: kind === 'over' ? `Over · ${Math.round(r * 100)}%` : kind === 'near' ? `Near · ${Math.round(r * 100)}%` : kind === 'fixed' ? 'Fixed · paid' : `${Math.round(r * 100)}%`,
+        rowBg: kind === 'over' ? 'var(--negSoft)' : 'transparent',
+        editing: s.editing === name, notEditing: s.editing !== name, draft: s.draft,
+        edit: () => this.setState({ editing: name, draft: String(limit) }),
+        onDraft: e => this.setState({ draft: e.target.value }),
+        commit: () => this.commit(name),
+        key: e => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') this.setState({ editing: null }); }
+      };
+    });
+    const rem = totB - totS, pct = totS / totB;
+    return {
+      rows, spentText: m(totS, 2), budgetText: m(totB, 0), remText: rem < 0 ? `${m(-rem, 2)} over` : m(rem, 2), remColor: rem < 0 ? 'var(--neg)' : 'var(--pri)',
+      overN: String(over), nearN: String(near), okN: String(ok),
+      totalW: Math.min(100, pct * 100).toFixed(1) + '%', totalBar: pct > 1 ? 'var(--neg)' : pct > 0.9 ? 'var(--gold)' : 'var(--pri)', totalPct: (pct * 100).toFixed(1) + '%',
+      col4: s.compare ? 'vs Sep' : 'Remaining',
+      setMonth: () => this.setState({ compare: false }), setCompare: () => this.setState({ compare: true }),
+      mBg: s.compare ? 'transparent' : 'var(--card)', mColor: s.compare ? 'var(--mute)' : 'var(--ink)',
+      cBg: s.compare ? 'var(--card)' : 'transparent', cColor: s.compare ? 'var(--ink)' : 'var(--mute)',
+      exportCsv: () => this.props.onToast && this.props.onToast('Exported ledger_budgets_2026-10.csv · 11 rows')
+    };
+  }
+}
+</script>
+</body>
+</html>

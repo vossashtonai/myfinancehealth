@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="padding:28px 32px 48px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:20px;">
+  <div style="grid-column:span 12;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-size:14px;color:var(--mute);">Nov 2025 – Oct 2026 · four sources</div>
+    <button onClick="{{ exportCsv }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;" style-hover="border-color:var(--gold);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
+      Export CSV
+    </button>
+  </div>
+
+  <section style="grid-column:span 4;position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;overflow:hidden;">
+    <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+    <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);">Year to date · 2026</div>
+    <div style="font-family:'Playfair Display',serif;font-size:48px;font-weight:500;margin:12px 0 6px;font-variant-numeric:tabular-nums lining-nums;">$98,307</div>
+    <div style="font-size:13px;color:var(--mute);">January – October · FY26–27 to date $39,352</div>
+  </section>
+  <section style="grid-column:span 4;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+    <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);">Average monthly</div>
+    <div style="font-family:'Playfair Display',serif;font-size:48px;font-weight:500;margin:12px 0 6px;font-variant-numeric:tabular-nums lining-nums;">$9,856</div>
+    <div style="font-size:13px;color:var(--mute);">Trailing 12 months · October $9,912.40</div>
+  </section>
+  <section style="grid-column:span 4;background:var(--priSoft);border:1px solid var(--line);border-radius:16px;padding:28px;">
+    <div style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--pri);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4"></path></svg>
+      Consistency · Very steady
+    </div>
+    <div style="font-family:'Playfair Display',serif;font-size:48px;font-weight:500;margin:12px 0 6px;color:var(--pri);font-variant-numeric:tabular-nums lining-nums;">±1.5%</div>
+    <div style="font-size:13px;color:var(--ink);line-height:1.5;text-wrap:pretty;">Every month in the last year landed within $265 of your average.</div>
+  </section>
+
+  <section style="grid-column:span 8;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">
+      <div>
+        <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Monthly income by source</h2>
+        <div style="font-size:13px;color:var(--mute);margin-top:4px;">Hover a month for the breakdown</div>
+      </div>
+      <div style="display:flex;gap:14px;font-size:12px;color:var(--mute);">
+        <span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:2px;background:{{ c0 }};"></span>Owner's draws</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:2px;background:{{ c1 }};"></span>Side income</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:2px;background:{{ c2 }};"></span>Interest</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <div style="display:flex;flex-direction:column;justify-content:space-between;height:252px;font-size:11px;color:var(--mute);text-align:right;font-variant-numeric:tabular-nums;margin-top:-6px;">
+        <span>$12k</span><span>$9k</span><span>$6k</span><span>$3k</span><span>$0</span>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="position:relative;height:240px;display:flex;align-items:flex-end;gap:10px;border-bottom:1px solid var(--line);">
+          <div style="position:absolute;left:0;right:0;top:0;border-top:1px dashed var(--line);"></div>
+          <div style="position:absolute;left:0;right:0;top:25%;border-top:1px dashed var(--line);"></div>
+          <div style="position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--line);"></div>
+          <div style="position:absolute;left:0;right:0;top:75%;border-top:1px dashed var(--line);"></div>
+          <div style="position:absolute;left:0;right:0;bottom:{{ avgY }};border-top:1px solid var(--gold);"><span style="position:absolute;right:0;top:-20px;font-size:11px;color:var(--goldInk);">avg $9,856</span></div>
+          <sc-for list="{{ months }}" as="mo" hint-placeholder-count="12">
+            <div onMouseEnter="{{ mo.enter }}" onMouseLeave="{{ leave }}" style="position:relative;flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;opacity:{{ mo.op }};transition:opacity .2s;cursor:default;">
+              <div style="height:{{ mo.h2 }};background:{{ c2 }};border-radius:4px 4px 0 0;"></div>
+              <div style="height:{{ mo.h1 }};background:{{ c1 }};margin-top:2px;"></div>
+              <div style="height:{{ mo.h0 }};background:{{ c0 }};margin-top:2px;"></div>
+              <sc-if value="{{ mo.active }}">
+                <div style="position:absolute;bottom:calc({{ mo.hT }} + 10px);left:50%;transform:translateX(-50%);z-index:3;min-width:170px;padding:12px 14px;border-radius:10px;background:var(--ink);color:var(--card);font-size:12px;line-height:1.75;box-shadow:0 8px 24px rgba(0,0,0,.18);font-variant-numeric:tabular-nums;white-space:nowrap;">
+                  <div style="font-weight:600;">{{ mo.full }} · {{ mo.total }}</div>
+                  <div style="display:flex;justify-content:space-between;gap:14px;"><span style="opacity:.7;">Owner's draws</span><span>{{ mo.v0 }}</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:14px;"><span style="opacity:.7;">Side income</span><span>{{ mo.v1 }}</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:14px;"><span style="opacity:.7;">Interest</span><span>{{ mo.v2 }}</span></div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px;">
+          <sc-for list="{{ months }}" as="mo" hint-placeholder-count="12"><div style="flex:1;text-align:center;font-size:11px;color:var(--mute);">{{ mo.m }}</div></sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="grid-column:span 4;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;display:flex;flex-direction:column;gap:20px;">
+    <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Sources · 12 months</h2>
+    <sc-for list="{{ sources }}" as="s" hint-placeholder-count="4">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="width:32px;height:32px;border-radius:9px;background:var(--raised);color:{{ s.color }};display:grid;place-items:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ s.icon }}"></path></svg></div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:500;">{{ s.name }}</div>
+            <div style="font-size:12px;color:var(--mute);">{{ s.note }}</div>
+          </div>
+          <div style="text-align:right;font-variant-numeric:tabular-nums;">
+            <div style="font-size:14px;font-weight:500;">{{ s.total }}</div>
+            <div style="font-size:12px;color:var(--mute);">{{ s.share }}</div>
+          </div>
+        </div>
+        <div style="height:5px;border-radius:999px;background:var(--track);overflow:hidden;"><div style="height:100%;width:{{ s.share }};background:{{ s.color }};border-radius:999px;"></div></div>
+      </div>
+    </sc-for>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MONTHS = ['Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+const FULL = ['Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026'];
+const SIDE = [1172,1445,940,1118,1252,1024,1364,1197,976,1285,1135,1240];
+const INT = [168,175,170,172,178,181,176,183,179,185,180,172.4];
+const m = (n, d = 0) => '$' + n.toLocaleString('en-AU', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+class Component extends DCLogic {
+  state = { hover: -1 };
+  renderVals() {
+    const dark = this.props.theme === 'dark';
+    const c = dark ? ['#10B981', '#D4AF37', '#7DDCB8'] : ['#0B6E4F', '#C9A227', '#8FC4AC'];
+    const H = 12000, h = this.state.hover;
+    const months = MONTHS.map((mo, i) => {
+      const t = 8500 + SIDE[i] + INT[i];
+      return { m: mo, full: FULL[i], total: m(t, 2), v0: m(8500, 2), v1: m(SIDE[i], 2), v2: m(INT[i], 2),
+        h0: (8500 / H * 100).toFixed(2) + '%', h1: (SIDE[i] / H * 100).toFixed(2) + '%', h2: (INT[i] / H * 100).toFixed(2) + '%', hT: (t / H * 100).toFixed(2) + '%',
+        active: h === i, op: h === -1 || h === i ? 1 : 0.45, enter: () => this.setState({ hover: i }) };
+    });
+    const sources = [
+      { name: "Business Owner's Draws", note: '$8,500 every month · fixed', total: '$102,000', share: '86.2%', color: c[0], icon: "M2 7h20v14H2zM16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" },
+      { name: 'Side Income', note: 'Consulting & content · $940–$1,445', total: '$14,148', share: '12.0%', color: c[1], icon: "M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" },
+      { name: 'Interest & Dividends', note: 'UBank HISA · ~$177/mo', total: '$2,119', share: '1.8%', color: c[2], icon: "M22 7 13.5 15.5 8.5 10.5 2 17M16 7h6v6" },
+      { name: 'Other', note: 'Nothing recorded this year', total: '$0', share: '0%', color: 'var(--mute)', icon: "M12 5v14M5 12h14" }
+    ];
+    return { months, sources, c0: c[0], c1: c[1], c2: c[2], avgY: (9855.6 / H * 100).toFixed(2) + '%',
+      leave: () => this.setState({ hover: -1 }),
+      exportCsv: () => this.props.onToast && this.props.onToast('Exported ledger_income_summary_2025-11-01_to_2026-10-30.csv') };
+  }
+}
+</script>
+</body>
+</html>

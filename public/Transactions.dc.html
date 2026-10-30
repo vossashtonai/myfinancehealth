@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="padding:28px 32px 48px;display:flex;flex-direction:column;gap:20px;">
+  <sc-if value="{{ isEmpty }}">
+    <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:80px 32px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;">
+      <div style="width:56px;height:56px;border-radius:16px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;border:1px solid var(--gold);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"></path></svg>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:500;">No transactions yet</div>
+      <div style="max-width:420px;font-size:14px;line-height:1.6;color:var(--mute);text-wrap:pretty;">Add your first transaction by hand, or connect a Google Sheet that already has a Transactions tab.</div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button onClick="{{ add }}" style="height:40px;padding:0 18px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:14px;font-weight:500;cursor:pointer;">Add first transaction</button>
+        <button style="height:40px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;cursor:pointer;">Connect Google Sheet</button>
+      </div>
+      <div style="font-size:12px;color:var(--mute);margin-top:6px;">Tip: press <span style="border:1px solid var(--line);border-radius:5px;padding:1px 6px;">N</span> anywhere to add a transaction</div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ hasData }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div style="position:relative;flex:1;min-width:220px;max-width:340px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mute)" stroke-width="1.7" stroke-linecap="round" style="position:absolute;left:12px;top:12px;"><path d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3"></path></svg>
+        <input ref="{{ searchRef }}" value="{{ q }}" onChange="{{ setQ }}" placeholder="Search description or notes" style="width:100%;box-sizing:border-box;height:40px;padding:0 36px 0 36px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;outline:none;">
+        <span style="position:absolute;right:10px;top:10px;font-size:11px;color:var(--mute);border:1px solid var(--line);border-radius:5px;padding:1px 6px;">/</span>
+      </div>
+      <select value="{{ range }}" onChange="{{ setRange }}" aria-label="Date range" style="height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;">
+        <option value="month">October 2026</option><option value="3m">Last 3 months</option><option value="12m">Last 12 months</option>
+      </select>
+      <select value="{{ cat }}" onChange="{{ setCat }}" aria-label="Category" style="height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;">
+        <sc-for list="{{ catOpts }}" as="o" hint-placeholder-count="8"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+      </select>
+      <select value="{{ acct }}" onChange="{{ setAcct }}" aria-label="Account" style="height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;">
+        <option value="All">All accounts</option><option value="Everyday">Everyday</option><option value="Savings">Savings</option><option value="Business Draws">Business Draws</option>
+      </select>
+      <div style="display:flex;padding:3px;border-radius:10px;background:var(--raised);border:1px solid var(--line);">
+        <sc-for list="{{ types }}" as="t" hint-placeholder-count="4">
+          <button onClick="{{ t.pick }}" style="height:32px;padding:0 12px;border:0;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;background:{{ t.bg }};color:{{ t.color }};box-shadow:{{ t.sh }};">{{ t.l }}</button>
+        </sc-for>
+      </div>
+      <div style="flex:1;"></div>
+      <button onClick="{{ exportCsv }}" style="display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;" style-hover="border-color:var(--gold);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
+        Export CSV
+      </button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);">
+      <div style="padding:20px 24px;border-right:1px solid var(--line);"><div style="font-size:12px;color:var(--mute);margin-bottom:6px;">Income</div><div style="font-size:22px;font-weight:500;color:var(--pri);font-variant-numeric:tabular-nums;">{{ tIncome }}</div></div>
+      <div style="padding:20px 24px;border-right:1px solid var(--line);"><div style="font-size:12px;color:var(--mute);margin-bottom:6px;">Expenses</div><div style="font-size:22px;font-weight:500;font-variant-numeric:tabular-nums;">{{ tExpense }}</div></div>
+      <div style="padding:20px 24px;border-right:1px solid var(--line);"><div style="font-size:12px;color:var(--mute);margin-bottom:6px;">Net</div><div style="font-size:22px;font-weight:500;color:var(--goldInk);font-variant-numeric:tabular-nums;">{{ tNet }}</div></div>
+      <div style="padding:20px 24px;"><div style="font-size:12px;color:var(--mute);margin-bottom:6px;">Transactions</div><div style="font-size:22px;font-weight:500;font-variant-numeric:tabular-nums;">{{ tCount }}</div></div>
+    </div>
+
+    <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);overflow:hidden;">
+      <div style="display:grid;grid-template-columns:110px minmax(0,1.6fr) 190px 140px 110px 130px;gap:16px;padding:14px 24px;border-bottom:1px solid var(--line);background:var(--raised);font-size:12px;color:var(--mute);">
+        <button onClick="{{ sortDate }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:4px;">Date <span style="color:var(--gold);">{{ arrowDate }}</span></button>
+        <button onClick="{{ sortDesc }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:4px;">Description <span style="color:var(--gold);">{{ arrowDesc }}</span></button>
+        <span>Category</span><span>Account</span><span>Type</span>
+        <button onClick="{{ sortAmt }}" style="all:unset;cursor:pointer;display:flex;align-items:center;justify-content:flex-end;gap:4px;">Amount <span style="color:var(--gold);">{{ arrowAmt }}</span></button>
+      </div>
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="12">
+        <div style="display:grid;grid-template-columns:110px minmax(0,1.6fr) 190px 140px 110px 130px;gap:16px;align-items:center;padding:12px 24px;border-bottom:1px solid var(--line);font-size:14px;transition:background .15s;" style-hover="background:var(--raised);">
+          <span style="color:var(--mute);font-variant-numeric:tabular-nums;font-size:13px;">{{ r.date }}</span>
+          <div style="min-width:0;">
+            <div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.desc }}</div>
+            <sc-if value="{{ r.notes }}"><div style="font-size:12px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.notes }}</div></sc-if>
+          </div>
+          <div><span style="display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:999px;font-size:12px;font-weight:500;background:{{ r.chipBg }};color:{{ r.chipColor }};">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ r.icon }}"></path></svg>{{ r.cat }}</span></div>
+          <span style="color:var(--mute);font-size:13px;">{{ r.account }}</span>
+          <span style="font-size:13px;color:var(--mute);">{{ r.type }}</span>
+          <span style="text-align:right;font-weight:500;font-variant-numeric:tabular-nums;color:{{ r.color }};">{{ r.amt }}</span>
+        </div>
+      </sc-for>
+      <sc-if value="{{ noMatch }}">
+        <div style="padding:56px 24px;text-align:center;color:var(--mute);font-size:14px;">No transactions match these filters. <button onClick="{{ clear }}" style="all:unset;cursor:pointer;color:var(--pri);font-weight:500;">Clear filters</button></div>
+      </sc-if>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;font-size:13px;color:var(--mute);">
+        <span style="font-variant-numeric:tabular-nums;">{{ pageLabel }}</span>
+        <div style="display:flex;gap:6px;">
+          <button onClick="{{ prev }}" style="height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;opacity:{{ prevOp }};">Previous</button>
+          <button onClick="{{ next }}" style="height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;opacity:{{ nextOp }};">Next</button>
+        </div>
+      </div>
+    </section>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const IC = {
+  Groceries: "M8 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM19 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM2 2h3l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6",
+  'Dining Out': "M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 2v2M10 2v2M14 2v2",
+  Transport: "M3 22h12M4 9h10M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0V9.83a2 2 0 0 0-.59-1.42L18 5",
+  Rent: "M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z",
+  'Utilities & Internet': "M13 2 3 14h9l-1 8 10-12h-9z",
+  Phone: "M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM12 18h.01",
+  Subscriptions: "M2 7h20v15H2zM17 2l-5 5-5-5",
+  'Health & Fitness': "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z",
+  Shopping: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0",
+  Entertainment: "M2 6h20v12H2zM10 9l5 3-5 3z",
+  Insurance: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
+  "Business Owner's Draws": "M2 7h20v14H2zM16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2",
+  'Side Income': "M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z",
+  'Interest & Dividends': "M22 7 13.5 15.5 8.5 10.5 2 17M16 7h6v6",
+  Transfer: "M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4",
+  Travel: "M2 16l20-8-6 12-3-5zM13 15l9-7"
+};
+const HUE = { Groceries:150, 'Dining Out':40, Transport:250, Rent:290, 'Utilities & Internet':205, Phone:230, Subscriptions:320, 'Health & Fitness':175, Shopping:75, Entertainment:350, Insurance:265, Travel:220, "Business Owner's Draws":158, 'Side Income':158, 'Interest & Dividends':158 };
+const money = (n) => '$' + Math.abs(n).toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+const OCT = [
+  [30,'Woolworths Metro','Groceries',-86.40],[23,'Coles Broadway','Groceries',-112.35],[18,'Aldi Marrickville','Groceries',-154.20],[12,'Woolworths Town Hall','Groceries',-168.55],[6,'Harris Farm Markets','Groceries',-92.10],[2,'Coles Broadway','Groceries',-112.25],
+  [28,'Single O Café','Dining Out',-18.50],[21,'Mr Wong','Dining Out',-146.00,'Birthday dinner'],[19,'Bourke Street Bakery','Dining Out',-24.60],[11,'Bills Surry Hills','Dining Out',-68.40],[4,'Gelato Messina','Dining Out',-22.50],[14,'Chin Chin','Dining Out',-62.00],
+  [29,'Ampol Surry Hills','Transport',-72.15],[17,'Uber','Transport',-28.40],[9,'Opal top-up','Transport',-40.00],[3,'BP Alexandria','Transport',-71.45],
+  [20,'AGL Energy','Utilities & Internet',-121.00],[8,'Aussie Broadband','Utilities & Internet',-85.00],[24,'Telstra','Phone',-65.00],
+  [27,'Netflix','Subscriptions',-18.99],[15,'Spotify','Subscriptions',-13.99],[5,'Adobe Creative Cloud','Subscriptions',-62.02],
+  [1,'Anytime Fitness','Health & Fitness',-64.95],[16,'Chemist Warehouse','Health & Fitness',-75.05],
+  [25,'Bunnings Warehouse','Shopping',-54.80],[13,'Uniqlo Pitt St','Shopping',-125.20],[26,'Event Cinemas','Entertainment',-46.00],[10,'Ticketek','Entertainment',-62.00],
+  [7,'NRMA Insurance','Insurance',-90.00],[1,'Rent · Ray White Surry Hills','Rent',-2400.00],
+  [1,"Owner's draw · Studio Pty Ltd","Business Owner's Draws",4250],[15,"Owner's draw · Studio Pty Ltd","Business Owner's Draws",4250],
+  [28,'Northwind Studio · consulting','Side Income',640,'Invoice #0142'],[21,'YouTube AdSense','Side Income',600],[30,'UBank interest','Interest & Dividends',172.40]
+];
+const BASE = [['Groceries',650,5,['Woolworths Metro','Coles Broadway','Aldi Marrickville','Harris Farm Markets']],['Dining Out',380,5,['Single O Café','Bills Surry Hills','Mr Wong','Bourke Street Bakery','Gelato Messina']],['Transport',220,4,['Ampol Surry Hills','Uber','Opal top-up','BP Alexandria']],['Shopping',180,2,['Bunnings Warehouse','Kmart','JB Hi-Fi','Uniqlo Pitt St']],['Entertainment',120,2,['Event Cinemas','Ticketek','Moonlight Cinema']],['Health & Fitness',75,1,['Chemist Warehouse']]];
+const FIXED = [[1,'Rent · Ray White Surry Hills','Rent',-2400],[1,'Anytime Fitness','Health & Fitness',-64.95],[5,'Adobe Creative Cloud','Subscriptions',-62.02],[15,'Spotify','Subscriptions',-13.99],[27,'Netflix','Subscriptions',-18.99],[7,'NRMA Insurance','Insurance',-90],[24,'Telstra','Phone',-65],[8,'Aussie Broadband','Utilities & Internet',-85],[20,'AGL Energy','Utilities & Internet',-125],[1,"Owner's draw · Studio Pty Ltd","Business Owner's Draws",4250],[15,"Owner's draw · Studio Pty Ltd","Business Owner's Draws",4250]];
+const SIDE = [1172,1445,940,1118,1252,1024,1364,1197,976,1285,1135];
+const INT = [168,175,170,172,178,181,176,183,179,185,180];
+
+function build() {
+  const out = [], r = rng(42);
+  const push = (y, m, d, desc, cat, amt, notes, type, account) => out.push({ d: new Date(y, m, d), desc, cat, amt, notes: notes || '', type: type || (amt > 0 ? 'Income' : 'Expense'), account: account || (cat === "Business Owner's Draws" ? 'Business Draws' : cat === 'Interest & Dividends' ? 'Savings' : 'Everyday') });
+  for (let k = 0; k < 11; k++) {
+    const y = k < 2 ? 2025 : 2026, m = (10 + k) % 12;
+    FIXED.forEach(f => push(y, m, f[0], f[1], f[2], f[3]));
+    BASE.forEach(([cat, tot, n, ms]) => {
+      const t = tot * (0.88 + r() * 0.24); const w = Array.from({ length: n }, () => 0.5 + r()); const s = w.reduce((a, b) => a + b, 0);
+      w.forEach((x, i) => push(y, m, 2 + Math.floor(r() * 26), ms[Math.floor(r() * ms.length)], cat, -Math.round(t * x / s * 100) / 100));
+    });
+    push(y, m, 12 + Math.floor(r() * 14), r() > 0.5 ? 'Northwind Studio · consulting' : 'Freelance content · Mosaic Media', 'Side Income', SIDE[k]);
+    push(y, m, 28, 'UBank interest', 'Interest & Dividends', INT[k]);
+    push(y, m, 2, 'Transfer to House Deposit', 'Transfer', 2500, '', 'Transfer', 'Savings');
+    if (m === 3) push(y, m, 9, 'Qantas · SYD–NRT return', 'Travel', -1100, 'Japan trip flights');
+    if (m === 6) push(y, m, 18, 'mycar Tyre & Auto · service', 'Transport', -650, 'Annual service + tyres');
+  }
+  OCT.forEach(o => push(2026, 9, o[0], o[1], o[2], o[3], o[4]));
+  push(2026, 9, 2, 'Transfer to House Deposit', 'Transfer', 2500, '', 'Transfer', 'Savings');
+  push(2026, 9, 2, 'Transfer to Car Upgrade', 'Transfer', 1350, '', 'Transfer', 'Savings');
+  push(2026, 9, 2, 'Transfer to Europe Trip', 'Transfer', 794, '', 'Transfer', 'Savings');
+  return out;
+}
+const ALL = build();
+const PER = 12;
+
+class Component extends DCLogic {
+  state = { q: '', range: 'month', cat: 'All', type: 'All', acct: 'All', sort: 'date', dir: -1, page: 0 };
+  searchRef = React.createRef();
+  componentDidMount() {
+    if (this.props.searchTick) setTimeout(() => this.searchRef.current && this.searchRef.current.focus(), 50);
+    if (this.props.keys) { this.k = e => { if (e.key === '/' && (e.target.tagName || '').toLowerCase() !== 'input') { e.preventDefault(); this.searchRef.current && this.searchRef.current.focus(); } }; window.addEventListener('keydown', this.k); }
+  }
+  componentWillUnmount() { if (this.k) window.removeEventListener('keydown', this.k); }
+  renderVals() {
+    const dark = this.props.theme === 'dark';
+    const s = this.state;
+    const from = s.range === 'month' ? new Date(2026, 9, 1) : s.range === '3m' ? new Date(2026, 7, 1) : new Date(2025, 10, 1);
+    const q = s.q.trim().toLowerCase();
+    let list = ALL.filter(t => t.d >= from && (s.cat === 'All' || t.cat === s.cat) && (s.type === 'All' || t.type === s.type) && (s.acct === 'All' || t.account === s.acct) && (!q || (t.desc + ' ' + t.notes).toLowerCase().includes(q)));
+    const sorter = { date: (a, b) => a.d - b.d, desc: (a, b) => a.desc.localeCompare(b.desc), amt: (a, b) => Math.abs(a.amt) - Math.abs(b.amt) }[s.sort];
+    list = list.slice().sort((a, b) => sorter(a, b) * s.dir);
+    const inc = list.filter(t => t.type === 'Income').reduce((a, t) => a + t.amt, 0);
+    const exp = list.filter(t => t.type === 'Expense').reduce((a, t) => a + t.amt, 0);
+    const pages = Math.max(1, Math.ceil(list.length / PER)); const page = Math.min(s.page, pages - 1);
+    const rows = list.slice(page * PER, page * PER + PER).map(t => {
+      const h = HUE[t.cat];
+      const chipColor = h == null ? 'var(--mute)' : dark ? `oklch(0.78 0.09 ${h})` : `oklch(0.45 0.09 ${h})`;
+      const chipBg = h == null ? 'var(--raised)' : dark ? `oklch(0.78 0.09 ${h} / 0.12)` : `oklch(0.55 0.09 ${h} / 0.1)`;
+      return { date: `${String(t.d.getDate()).padStart(2, '0')} ${MN[t.d.getMonth()]} ${t.d.getFullYear()}`, desc: t.desc, notes: t.notes, cat: t.cat, account: t.account, type: t.type, icon: IC[t.cat] || IC.Transfer, chipBg, chipColor,
+        amt: t.type === 'Transfer' ? money(t.amt) : (t.amt > 0 ? '+' : '−') + money(t.amt),
+        color: t.type === 'Income' ? 'var(--pri)' : t.type === 'Transfer' ? 'var(--mute)' : 'var(--ink)' };
+    });
+    const cats = ['Groceries','Dining Out','Transport','Rent','Utilities & Internet','Phone','Subscriptions','Health & Fitness','Shopping','Entertainment','Insurance','Travel',"Business Owner's Draws",'Side Income','Interest & Dividends','Transfer'];
+    const arrow = k => s.sort === k ? (s.dir < 0 ? '↓' : '↑') : '';
+    const sortBy = k => () => this.setState(st => ({ sort: k, dir: st.sort === k ? -st.dir : (k === 'desc' ? 1 : -1), page: 0 }));
+    const empty = !!this.props.empty;
+    return {
+      isEmpty: empty, hasData: !empty, add: () => this.props.onAdd && this.props.onAdd(),
+      searchRef: this.searchRef, q: s.q, setQ: e => this.setState({ q: e.target.value, page: 0 }),
+      range: s.range, setRange: e => this.setState({ range: e.target.value, page: 0 }),
+      cat: s.cat, setCat: e => this.setState({ cat: e.target.value, page: 0 }),
+      acct: s.acct, setAcct: e => this.setState({ acct: e.target.value, page: 0 }),
+      catOpts: [{ v: 'All', l: 'All categories' }, ...cats.map(c => ({ v: c, l: c }))],
+      types: ['All','Income','Expense','Transfer'].map(l => ({ l, bg: s.type === l ? 'var(--card)' : 'transparent', color: s.type === l ? 'var(--ink)' : 'var(--mute)', sh: s.type === l ? '0 1px 3px rgba(0,0,0,.1)' : 'none', pick: () => this.setState({ type: l, page: 0 }) })),
+      tIncome: '+' + money(inc), tExpense: '−' + money(exp), tNet: (inc + exp >= 0 ? '+' : '−') + money(inc + exp), tCount: String(list.length),
+      rows, noMatch: list.length === 0,
+      sortDate: sortBy('date'), sortDesc: sortBy('desc'), sortAmt: sortBy('amt'), arrowDate: arrow('date'), arrowDesc: arrow('desc'), arrowAmt: arrow('amt'),
+      pageLabel: list.length ? `Showing ${page * PER + 1}–${Math.min(list.length, page * PER + PER)} of ${list.length}` : '',
+      prev: () => this.setState({ page: Math.max(0, page - 1) }), next: () => this.setState({ page: Math.min(pages - 1, page + 1) }),
+      prevOp: page === 0 ? 0.4 : 1, nextOp: page >= pages - 1 ? 0.4 : 1,
+      clear: () => this.setState({ q: '', cat: 'All', type: 'All', acct: 'All', page: 0 }),
+      exportCsv: () => { const f = { month: '2026-10-01', '3m': '2026-08-01', '12m': '2025-11-01' }[s.range]; this.props.onToast && this.props.onToast(`Exported ledger_transactions_${f}_to_2026-10-30.csv · ${list.length} rows`); }
+    };
+  }
+}
+</script>
+</body>
+</html>

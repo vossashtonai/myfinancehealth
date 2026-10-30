@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="padding:28px 32px 48px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:20px;">
+  <div style="grid-column:span 12;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <div style="display:flex;padding:3px;border-radius:10px;background:var(--raised);border:1px solid var(--line);">
+      <sc-for list="{{ views }}" as="v" hint-placeholder-count="3">
+        <button onClick="{{ v.pick }}" style="height:32px;padding:0 14px;border:0;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;background:{{ v.bg }};color:{{ v.color }};box-shadow:{{ v.sh }};">{{ v.l }}</button>
+      </sc-for>
+    </div>
+    <div style="display:flex;padding:3px;border-radius:10px;background:var(--raised);border:1px solid var(--line);">
+      <sc-for list="{{ bases }}" as="v" hint-placeholder-count="2">
+        <button onClick="{{ v.pick }}" style="height:32px;padding:0 14px;border:0;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;background:{{ v.bg }};color:{{ v.color }};box-shadow:{{ v.sh }};">{{ v.l }}</button>
+      </sc-for>
+    </div>
+    <div onMouseEnter="{{ infoOn }}" onMouseLeave="{{ infoOff }}" style="position:relative;display:flex;align-items:center;gap:6px;height:38px;padding:0 10px;font-size:13px;color:var(--mute);cursor:help;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 16v-4M12 8h.01"></path></svg>
+      How projections work
+      <sc-if value="{{ info }}">
+        <div style="position:absolute;top:42px;left:0;z-index:5;width:340px;padding:16px;border-radius:12px;background:var(--card);border:1px solid var(--line);box-shadow:0 16px 40px rgba(0,0,0,.16);color:var(--ink);font-size:13px;line-height:1.6;">
+          Each income source is projected separately from its trailing 12-month average, adjusted for trend, then stacked. The shaded band shows a low–high range: narrow for your fixed draws, wider for side income. Expenses use the same method, and projected savings are income minus expenses.
+        </div>
+      </sc-if>
+    </div>
+    <div style="flex:1;"></div>
+    <button onClick="{{ exportCsv }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;" style-hover="border-color:var(--gold);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
+      Export CSV
+    </button>
+  </div>
+
+  <div style="grid-column:span 12;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-right:4px;">What if</span>
+    <sc-for list="{{ scen }}" as="s" hint-placeholder-count="3">
+      <button onClick="{{ s.toggle }}" aria-pressed="{{ s.on }}" style="display:flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:999px;border:1px solid {{ s.border }};background:{{ s.bg }};color:{{ s.color }};font:inherit;font-size:13px;cursor:pointer;transition:all .2s;">
+        <span style="width:14px;height:14px;border-radius:4px;border:1.5px solid currentColor;display:grid;place-items:center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:{{ s.checkOp }};"><path d="M20 6 9 17l-5-5"></path></svg></span>
+        {{ s.l }}
+      </button>
+    </sc-for>
+    <sc-if value="{{ scenActive }}">
+      <span style="font-size:13px;color:var(--goldInk);font-weight:500;">{{ scenSummary }}</span>
+    </sc-if>
+  </div>
+
+  <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4">
+    <section style="grid-column:span 3;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:22px 24px;">
+      <div style="font-size:12px;color:var(--mute);">{{ c.label }}</div>
+      <div style="font-size:26px;font-weight:500;margin:8px 0 14px;font-variant-numeric:tabular-nums;letter-spacing:-.01em;color:{{ c.color }};">{{ c.value }}</div>
+      <div style="height:5px;border-radius:999px;background:var(--track);overflow:hidden;"><div style="height:100%;width:{{ c.w }};background:{{ c.bar }};border-radius:999px;transition:width .4s;"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums;"><span>{{ c.actual }}</span><span>{{ c.pct }}</span></div>
+    </section>
+  </sc-for>
+
+  <section style="grid-column:span 12;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">
+      <div>
+        <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Income &amp; expenses forecast</h2>
+        <div style="font-size:13px;color:var(--mute);margin-top:4px;">{{ chartSub }}</div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:12px;color:var(--mute);align-items:center;">
+        <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:3px;border-radius:2px;background:var(--pri);"></span>Income actual</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:0;border-top:2px dashed var(--pri);"></span>Projected</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:10px;border-radius:2px;background:var(--pri);opacity:.15;"></span>Range</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:3px;border-radius:2px;background:var(--neg);"></span>Expenses</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <div style="display:flex;flex-direction:column;justify-content:space-between;height:272px;font-size:11px;color:var(--mute);text-align:right;font-variant-numeric:tabular-nums;margin-top:-6px;min-width:40px;">
+        <sc-for list="{{ yTicks }}" as="t" hint-placeholder-count="5"><span>{{ t }}</span></sc-for>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="position:relative;height:260px;border-bottom:1px solid var(--line);">
+          <div style="position:absolute;left:0;right:0;top:0;border-top:1px dashed var(--line);"></div>
+          <div style="position:absolute;left:0;right:0;top:25%;border-top:1px dashed var(--line);"></div>
+          <div style="position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--line);"></div>
+          <div style="position:absolute;left:0;right:0;top:75%;border-top:1px dashed var(--line);"></div>
+          <div style="position:absolute;top:-10px;bottom:0;left:{{ todayX }};border-left:1.5px solid var(--gold);">
+            <span style="position:absolute;top:-8px;left:6px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--goldInk);white-space:nowrap;">Today</span>
+          </div>
+          <svg viewBox="{{ vb }}" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">
+            <path d="{{ band }}" fill="var(--pri)" fill-opacity=".13"></path>
+            <path d="{{ incA }}" fill="none" stroke="var(--pri)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linecap="round"></path>
+            <path d="{{ incP }}" fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-dasharray="6 5" vector-effect="non-scaling-stroke" stroke-linecap="round"></path>
+            <path d="{{ expA }}" fill="none" stroke="var(--neg)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round"></path>
+            <path d="{{ expP }}" fill="none" stroke="var(--neg)" stroke-width="2" stroke-dasharray="6 5" vector-effect="non-scaling-stroke" stroke-linecap="round"></path>
+          </svg>
+          <sc-for list="{{ pts }}" as="p" hint-placeholder-count="12">
+            <div onMouseEnter="{{ p.enter }}" onMouseLeave="{{ leave }}" style="position:absolute;top:0;bottom:0;left:{{ p.left }};width:{{ p.w }};cursor:crosshair;">
+              <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--mute);opacity:{{ p.guide }};"></div>
+              <div style="position:absolute;left:50%;bottom:{{ p.iy }};width:8px;height:8px;border-radius:50%;background:{{ p.dotFill }};border:2px solid var(--pri);transform:translate(-50%,50%);"></div>
+              <div style="position:absolute;left:50%;bottom:{{ p.ey }};width:7px;height:7px;border-radius:50%;background:{{ p.dotFill }};border:2px solid var(--neg);transform:translate(-50%,50%);"></div>
+              <sc-if value="{{ p.active }}">
+                <div style="position:absolute;bottom:calc({{ p.iy }} + 18px);left:50%;transform:translateX({{ p.tipX }});z-index:4;min-width:190px;padding:12px 14px;border-radius:10px;background:var(--ink);color:var(--card);font-size:12px;line-height:1.75;box-shadow:0 8px 24px rgba(0,0,0,.2);font-variant-numeric:tabular-nums;white-space:nowrap;">
+                  <div style="font-weight:600;">{{ p.label }} · {{ p.kind }}</div>
+                  <div style="display:flex;justify-content:space-between;gap:14px;"><span style="opacity:.7;">Income</span><span>{{ p.inc }}</span></div>
+                  <sc-if value="{{ p.hasRange }}"><div style="display:flex;justify-content:space-between;gap:14px;"><span style="opacity:.7;">Range</span><span>{{ p.range }}</span></div></sc-if>
+                  <div style="display:flex;justify-content:space-between;gap:14px;"><span style="opacity:.7;">Expenses</span><span>{{ p.exp }}</span></div>
+                  <div style="display:flex;justify-content:space-between;gap:14px;"><span style="opacity:.7;">Savings</span><span>{{ p.sav }}</span></div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;margin-top:10px;">
+          <sc-for list="{{ pts }}" as="p" hint-placeholder-count="12"><div style="flex:1;text-align:center;font-size:11px;color:{{ p.lColor }};white-space:nowrap;">{{ p.short }}</div></sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="grid-column:span 8;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+      <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Goal achievement</h2>
+      <span style="font-size:13px;color:var(--mute);">Per {{ unit }}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:minmax(0,1.5fr) 110px 110px minmax(0,1.4fr) 130px;gap:16px;padding:12px 0;border-bottom:1px solid var(--line);font-size:12px;color:var(--mute);">
+      <span>Goal</span><span style="text-align:right;">Required</span><span style="text-align:right;">Projected</span><span>Status</span><span style="text-align:right;">Completion</span>
+    </div>
+    <sc-for list="{{ goals }}" as="g" hint-placeholder-count="3">
+      <div style="display:grid;grid-template-columns:minmax(0,1.5fr) 110px 110px minmax(0,1.4fr) 130px;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);font-size:14px;">
+        <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+          <div style="flex:none;width:34px;height:34px;border-radius:9px;background:{{ g.iconBg }};color:{{ g.iconColor }};display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ g.icon }}"></path></svg></div>
+          <div style="min-width:0;"><div style="font-weight:500;">{{ g.name }}</div><div style="font-size:12px;color:var(--mute);">{{ g.sub }}</div></div>
+        </div>
+        <span style="text-align:right;font-variant-numeric:tabular-nums;">{{ g.req }}</span>
+        <span style="text-align:right;font-variant-numeric:tabular-nums;font-weight:500;">{{ g.proj }}</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;justify-self:start;font-size:12px;font-weight:500;padding:4px 10px;border-radius:999px;background:{{ g.sBg }};color:{{ g.sColor }};">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ g.sIcon }}"></path></svg>{{ g.status }}
+        </span>
+        <div style="text-align:right;"><div style="font-weight:500;">{{ g.done }}</div><div style="font-size:12px;color:var(--mute);">target {{ g.target }}</div></div>
+      </div>
+    </sc-for>
+    <div style="margin-top:22px;">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px;"><span style="font-weight:500;">How projected savings are split</span><span style="color:var(--mute);font-variant-numeric:tabular-nums;">{{ splitTotal }} / month · by priority</span></div>
+      <div style="display:flex;gap:3px;height:12px;border-radius:999px;overflow:hidden;">
+        <sc-for list="{{ split }}" as="s" hint-placeholder-count="4"><div style="width:{{ s.w }};background:{{ s.color }};transition:width .4s;"></div></sc-for>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:18px;margin-top:10px;font-size:12px;color:var(--mute);">
+        <sc-for list="{{ split }}" as="s" hint-placeholder-count="4"><span style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:2px;background:{{ s.color }};"></span>{{ s.name }} <span style="color:var(--ink);font-variant-numeric:tabular-nums;">{{ s.amt }}</span></span></sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="grid-column:span 4;position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;overflow:hidden;display:flex;flex-direction:column;">
+    <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+    <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);">Required income</div>
+    <div style="font-size:14px;color:var(--mute);margin-top:18px;">To hit all goals on time you need</div>
+    <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:500;margin:4px 0 2px;font-variant-numeric:tabular-nums lining-nums;">{{ needInc }}<span style="font-family:'Geist',sans-serif;font-size:14px;color:var(--mute);"> / month</span></div>
+    <div style="font-size:14px;color:var(--mute);margin-top:16px;">You're projected to earn</div>
+    <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:500;margin:4px 0 2px;color:var(--pri);font-variant-numeric:tabular-nums lining-nums;">{{ projInc }}<span style="font-family:'Geist',sans-serif;font-size:14px;color:var(--mute);"> / month</span></div>
+    <div style="flex:1;"></div>
+    <div style="margin-top:22px;padding:14px 16px;border-radius:12px;background:{{ gapBg }};color:{{ gapColor }};font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ gapIcon }}"></path></svg>{{ gapText }}
+    </div>
+    <div style="font-size:12px;color:var(--mute);margin-top:10px;">Includes projected expenses of {{ projExp }}/month · FIRE age {{ fireAge }}</div>
+  </section>
+
+  <section style="grid-column:span 12;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);overflow:hidden;">
+    <div style="padding:22px 24px 14px;display:flex;justify-content:space-between;align-items:baseline;">
+      <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Projections table</h2>
+      <span style="font-size:12px;color:var(--mute);">Actual periods in regular weight, projections in italics</span>
+    </div>
+    <div style="display:grid;grid-template-columns:minmax(0,1.1fr) repeat(8,minmax(0,1fr));gap:12px;padding:12px 24px;background:var(--raised);border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px;color:var(--mute);text-align:right;">
+      <span style="text-align:left;">Period</span><span>Draws</span><span>Side</span><span>Interest</span><span>Income</span><span>Expenses</span><span>Savings</span><span>Cumulative</span><span>House goal</span>
+    </div>
+    <sc-for list="{{ table }}" as="r" hint-placeholder-count="12">
+      <div style="display:grid;grid-template-columns:minmax(0,1.1fr) repeat(8,minmax(0,1fr));gap:12px;padding:11px 24px;border-bottom:1px solid var(--line);font-size:13px;text-align:right;font-variant-numeric:tabular-nums;font-style:{{ r.fs }};color:{{ r.color }};">
+        <span style="text-align:left;font-style:normal;font-weight:500;color:var(--ink);">{{ r.label }}</span><span>{{ r.d }}</span><span>{{ r.s }}</span><span>{{ r.i }}</span><span style="color:var(--ink);">{{ r.inc }}</span><span>{{ r.exp }}</span><span style="color:var(--pri);">{{ r.sav }}</span><span>{{ r.cum }}</span><span style="color:var(--goldInk);">{{ r.house }}</span>
+      </div>
+    </sc-for>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const m = (n, d = 0) => (n < 0 ? '−' : '') + '$' + Math.abs(n).toLocaleString('en-AU', { minimumFractionDigits: d, maximumFractionDigits: d });
+const mk = n => Math.abs(n) >= 1000 ? '$' + (n / 1000).toFixed(Math.abs(n) >= 100000 ? 0 : 1).replace('.0', '') + 'k' : '$' + Math.round(n);
+// actual months Nov 2025 – Oct 2026
+const ACT = [
+  [2025,10,1172,168,4380],[2025,11,1445,175,5060],[2026,0,940,170,4290],[2026,1,1118,172,4410],[2026,2,1252,178,4520],[2026,3,1024,181,5620],
+  [2026,4,1364,176,4350],[2026,5,1197,183,4470],[2026,6,976,179,5180],[2026,7,1285,185,4440],[2026,8,1135,180,4610],[2026,9,1240,172.4,4563.85]
+].map(([y, mo, s, i, e]) => ({ y, mo, d: 8500, s, i, e, actual: true }));
+const SIDE_P = [1180,1190,1220,1200,1230,1210,1190,1240,1220,1210,1215,1250];
+const EXP_P = [4420,4450,4500,4700,4460,4480,4650,4470,4500,4520,4480,4950];
+function projMonths(sc) {
+  const out = [];
+  for (let k = 0; k < 62; k++) {
+    const idx = 10 + k, y = 2026 + Math.floor(idx / 12), mo = idx % 12, g = Math.pow(1.0012, k), ge = Math.pow(1.002, k);
+    const s = SIDE_P[mo] * g * (sc.side ? 1.1 : 1);
+    out.push({ y, mo, k, d: 8500 + (sc.draw ? 500 : 0), s, i: 180 * g, e: EXP_P[mo] * ge - (sc.cut ? 300 : 0), actual: false });
+  }
+  return out;
+}
+const ICON = { house: "M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z", plane: "M2 16l20-8-6 12-3-5zM13 15l9-7", car: "M5 17H3v-5l2.5-5h11L19 12h2v5h-2M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM9 17h6M5 12h14", check: "M20 6 9 17l-5-5", up: "M7 17 17 7M7 7h10v10", alert: "M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" };
+const addM = (y, mo, n) => { const t = y * 12 + mo + n; return MN[t % 12] + ' ' + Math.floor(t / 12); };
+function fireYears(extra, cut) {
+  const target = (54000 - cut * 12) / 0.04; let P = 134950, c = 24000 + extra * 12;
+  for (let n = 1; n < 60; n++) { const prev = P; P = P * 1.07 + c; if (P >= target) return n - 1 + (target - prev) / (P - prev); }
+  return 60;
+}
+
+class Component extends DCLogic {
+  state = { view: 'month', basis: 'cal', sc: { side: false, draw: false, cut: false }, hover: -1, info: false };
+  periods(all) {
+    const { view, basis } = this.state;
+    const sum = (arr, label, short) => {
+      const o = { label, short, d: 0, s: 0, i: 0, e: 0, lo: 0, hi: 0, nA: 0, n: arr.length };
+      arr.forEach(x => { o.d += x.d; o.s += x.s; o.i += x.i; o.e += x.e; if (x.actual) o.nA++; else { const w = (x.s * 0.22 + 60) * (1 + x.k * 0.04); o.lo += w; o.hi += w; } });
+      o.inc = o.d + o.s + o.i; o.actual = o.nA === o.n; o.partial = o.nA > 0 && o.nA < o.n; return o;
+    };
+    if (view === 'month') {
+      const sel = all.filter(x => (x.y === 2026 && x.mo >= 4) || (!x.actual && x.k < 12));
+      return sel.map(x => sum([x], `${MN[x.mo]} ${x.y}`, `${MN[x.mo]} ${String(x.y).slice(2)}`));
+    }
+    if (view === 'quarter') {
+      const qs = [];
+      for (let q = 0; q < 8; q++) {
+        const startIdx = (2026 * 12 + 3) + q * 3;
+        const arr = all.filter(x => { const t = x.y * 12 + x.mo; return t >= startIdx && t < startIdx + 3; });
+        const y = Math.floor(startIdx / 12), qn = Math.floor((startIdx % 12) / 3) + 1;
+        let label, short;
+        if (basis === 'cal') { label = `Q${qn} ${y}`; short = `Q${qn} ${String(y).slice(2)}`; }
+        else { const fq = ((qn + 1) % 4) + 1, fy = qn >= 3 ? y + 1 : y; label = `Q${fq} FY${String(fy - 1).slice(2)}–${String(fy).slice(2)}`; short = `Q${fq} FY${String(fy).slice(2)}`; }
+        qs.push(sum(arr, label, short));
+      }
+      return qs;
+    }
+    const ys = [];
+    if (basis === 'cal') {
+      ys.push({ label: '2025', short: '2025', d: 102000, s: 13240, i: 2010, e: 54310, lo: 0, hi: 0, inc: 117250, actual: true, partial: false });
+      for (let y = 2026; y <= 2030; y++) ys.push(sum(all.filter(x => x.y === y), String(y), String(y)));
+    } else {
+      ys.push({ label: 'FY25–26', short: 'FY26', d: 102000, s: 13780, i: 2090, e: 55020, lo: 0, hi: 0, inc: 117870, actual: true, partial: false });
+      for (let y = 2026; y <= 2030; y++) ys.push(sum(all.filter(x => { const t = x.y * 12 + x.mo; return t >= y * 12 + 6 && t < (y + 1) * 12 + 6; }), `FY${String(y).slice(2)}–${String(y + 1).slice(2)}`, `FY${String(y + 1).slice(2)}`));
+    }
+    return ys;
+  }
+  renderVals() {
+    const st = this.state, sc = st.sc;
+    const all = ACT.concat(projMonths(sc));
+    const P = this.periods(all);
+    const N = P.length, H = 260;
+    const maxV = Math.max(...P.map(p => p.inc + p.hi)) * 1.12;
+    const nice = Math.pow(10, Math.floor(Math.log10(maxV))) / 2; const top = Math.ceil(maxV / nice) * nice;
+    const y = v => H - v / top * H;
+    const xs = i => (i + 0.5) * 100;
+    const lastA = P.reduce((a, p, i) => (p.actual || p.partial) ? i : a, -1);
+    const line = (key, from, to) => P.slice(from, to + 1).map((p, j) => `${j ? 'L' : 'M'}${xs(from + j)},${y(p[key]).toFixed(1)}`).join(' ');
+    const fullA = P.reduce((a, p, i) => p.actual ? i : a, -1);
+    const pStart = Math.max(0, fullA);
+    const bandPts = P.slice(pStart);
+    const band = bandPts.length > 1 ? bandPts.map((p, j) => `${j ? 'L' : 'M'}${xs(pStart + j)},${y(p.inc + p.hi).toFixed(1)}`).join(' ') + ' ' + bandPts.slice().reverse().map((p, j) => `L${xs(pStart + bandPts.length - 1 - j)},${y(p.inc - p.lo).toFixed(1)}`).join(' ') + ' Z' : '';
+    const todayFrac = st.view === 'month' ? (lastA + 1) / N : st.view === 'quarter' ? (lastA + 1 / 3) / N : (lastA + (st.basis === 'cal' ? 10 / 12 : 4 / 12)) / N;
+    const pts = P.map((p, i) => ({
+      label: p.label, short: p.short, left: (i / N * 100).toFixed(3) + '%', w: (100 / N).toFixed(3) + '%',
+      iy: (p.inc / top * 100).toFixed(2) + '%', ey: (p.e / top * 100).toFixed(2) + '%',
+      dotFill: p.actual ? 'var(--pri)' : 'var(--card)', guide: st.hover === i ? 0.3 : 0, active: st.hover === i,
+      tipX: i > N - 3 ? '-90%' : i < 2 ? '-10%' : '-50%',
+      kind: p.actual ? 'Actual' : p.partial ? 'Actual + projected' : 'Projected',
+      inc: m(p.inc), exp: m(p.e), sav: m(p.inc - p.e), hasRange: !p.actual, range: `${m(p.inc - p.lo)} – ${m(p.inc + p.hi)}`,
+      lColor: p.actual ? 'var(--ink)' : 'var(--mute)', enter: () => this.setState({ hover: i })
+    }));
+
+    // goals
+    const extra = (sc.side ? 1215 * 0.1 : 0) + (sc.draw ? 500 : 0) + (sc.cut ? 300 : 0);
+    const toEu = Math.min(100, extra), toHouse = extra - toEu;
+    const mult = st.view === 'month' ? 1 : st.view === 'quarter' ? 3 : 12;
+    const unit = st.view === 'month' ? 'month' : st.view === 'quarter' ? 'quarter' : 'year';
+    const hAlloc = 2500 + toHouse, hBase = Math.ceil(51600 / 2450), hNew = Math.ceil(51600 / (2450 + toHouse)), hShift = hBase - hNew, hAhead = 4 + hShift;
+    const eAlloc = 794 + toEu, eOn = eAlloc >= 894, eMonths = Math.ceil(7150 / eAlloc);
+    const goals = [
+      { name: 'House Deposit', sub: '$68,400 of $120,000 · priority 1', icon: ICON.house, iconBg: 'var(--priSoft)', iconColor: 'var(--pri)', req: m(2060 * mult), proj: m(hAlloc * mult),
+        status: `Ahead by ${hAhead} months`, sIcon: ICON.up, sBg: 'var(--goldSoft)', sColor: 'var(--goldInk)', done: addM(2028, 7, -hShift), target: 'Dec 2028' },
+      { name: 'Europe Trip', sub: '$4,850 of $12,000 · priority 2', icon: ICON.plane, iconBg: 'var(--raised)', iconColor: 'var(--ink)', req: m(894 * mult), proj: m(eAlloc * mult),
+        status: eOn ? 'On track' : `Behind: need ${m((894 - eAlloc) * mult)} more per ${unit}`, sIcon: eOn ? ICON.check : ICON.alert, sBg: eOn ? 'var(--priSoft)' : 'var(--negSoft)', sColor: eOn ? 'var(--pri)' : 'var(--neg)', done: eOn ? 'Jun 2027' : addM(2026, 10, eMonths - 1), target: 'Jun 2027' },
+      { name: 'Car Upgrade', sub: '$7,200 of $30,000 · priority 3', icon: ICON.car, iconBg: 'var(--raised)', iconColor: 'var(--ink)', req: m(1341 * mult), proj: m(1350 * mult),
+        status: 'On track', sIcon: ICON.check, sBg: 'var(--priSoft)', sColor: 'var(--pri)', done: 'Mar 2028', target: 'Mar 2028' }
+    ];
+    const monthlySav = 5350 + extra;
+    const rest = monthlySav - hAlloc - eAlloc - 1350;
+    const split = [['House Deposit', hAlloc, 'var(--pri)'], ['Car Upgrade', 1350, 'var(--gold)'], ['Europe Trip', eAlloc, this.props.theme === 'dark' ? '#7DDCB8' : '#8FC4AC'], ['Investing', rest, 'var(--mute)']]
+      .map(([name, v, color]) => ({ name, color, amt: m(v), w: (v / monthlySav * 100).toFixed(1) + '%' }));
+    const expM = 4530 - (sc.cut ? 300 : 0), incM = 9880 + (sc.side ? 121.5 : 0) + (sc.draw ? 500 : 0);
+    const need = expM + 2060 + 894 + 1341, gap = incM - need;
+    const fy = fireYears(extra, sc.cut ? 300 : 0), fireAge = Math.floor(29 + fy), fireBase = Math.floor(29 + fireYears(0, 0));
+
+    // cards
+    const sumIf = f => all.filter(f);
+    const tot = arr => arr.reduce((a, x) => a + x.d + x.s + x.i, 0);
+    const totS = arr => arr.reduce((a, x) => a + x.d + x.s + x.i - x.e, 0);
+    const tIdx = x => x.y * 12 + x.mo;
+    const qStart = 2026 * 12 + 9;
+    const yr = st.basis === 'cal' ? (x => x.y === 2026) : (x => tIdx(x) >= 2026 * 12 + 6 && tIdx(x) < 2027 * 12 + 6);
+    const card = (label, arr, isSav) => {
+      const p = isSav ? totS(arr) : tot(arr), a = isSav ? totS(arr.filter(x => x.actual)) : tot(arr.filter(x => x.actual));
+      return { label, value: m(p), actual: `${m(a)} actual to date`, pct: Math.round(a / p * 100) + '%', w: Math.min(100, a / p * 100).toFixed(1) + '%', bar: isSav ? 'var(--gold)' : 'var(--pri)', color: isSav ? 'var(--goldInk)' : 'var(--ink)' };
+    };
+    const cards = [
+      card('Projected income · October', sumIf(x => tIdx(x) === qStart && x.actual).concat([{ d: 8500, s: 1180, i: 200, e: 0, actual: false }]).slice(0, 1).map(x => x), false),
+      card(st.basis === 'cal' ? 'Projected income · Q4 2026' : 'Projected income · Q2 FY26–27', sumIf(x => tIdx(x) >= qStart && tIdx(x) < qStart + 3), false),
+      card(st.basis === 'cal' ? 'Projected income · 2026' : 'Projected income · FY26–27', sumIf(yr), false),
+      card(st.basis === 'cal' ? 'Projected savings · 2026' : 'Projected savings · FY26–27', sumIf(yr), true)
+    ];
+    cards[0] = { label: 'Projected income · October', value: '$9,880', actual: '$9,912 actual to date', pct: '100%', w: '100%', bar: 'var(--pri)', color: 'var(--ink)' };
+
+    let cum = 0, house = 68400;
+    const table = P.map(p => { const sv = p.inc - p.e; cum += sv; if (!p.actual) house = Math.min(120000, house + (p.partial ? hAlloc * (p.n - p.nA) : hAlloc * p.n)); return { label: p.label + (p.partial ? ' *' : ''), d: m(p.d), s: m(p.s), i: m(p.i), inc: m(p.inc), exp: m(p.e), sav: m(sv), cum: m(cum), house: Math.round(house / 1200) + '%', fs: p.actual ? 'normal' : 'italic', color: p.actual ? 'var(--ink)' : 'var(--mute)' }; });
+
+    const seg = (l, on, pick) => ({ l, pick, bg: on ? 'var(--card)' : 'transparent', color: on ? 'var(--ink)' : 'var(--mute)', sh: on ? '0 1px 3px rgba(0,0,0,.1)' : 'none' });
+    const scDefs = [['side', '+10% side income'], ['draw', 'Draw increase of $500/month'], ['cut', 'Cut expenses by $300/month']];
+    const anyOn = sc.side || sc.draw || sc.cut;
+    return {
+      views: [['month', 'Month to month'], ['quarter', 'Quarter to quarter'], ['year', 'Year to year']].map(([k, l]) => seg(l, st.view === k, () => this.setState({ view: k, hover: -1 }))),
+      bases: [['cal', 'Calendar year'], ['fy', 'Financial year']].map(([k, l]) => seg(l, st.basis === k, () => this.setState({ basis: k, hover: -1 }))),
+      info: st.info, infoOn: () => this.setState({ info: true }), infoOff: () => this.setState({ info: false }),
+      scen: scDefs.map(([k, l]) => ({ l, on: String(!!sc[k]), checkOp: sc[k] ? 1 : 0, bg: sc[k] ? 'var(--goldSoft)' : 'var(--card)', border: sc[k] ? 'var(--gold)' : 'var(--line)', color: sc[k] ? 'var(--goldInk)' : 'var(--ink)', toggle: () => this.setState(s => ({ sc: { ...s.sc, [k]: !s.sc[k] } })) })),
+      scenActive: anyOn, scenSummary: `+${m(extra)}/month saved · House ${hShift > 0 ? hShift + ' month' + (hShift > 1 ? 's' : '') + ' sooner' : 'unchanged'} · FIRE age ${fireBase} → ${fireAge}`,
+      cards, chartSub: st.view === 'month' ? 'May 2026 – Oct 2027 · monthly' : st.view === 'quarter' ? 'Eight quarters · ' + (st.basis === 'cal' ? 'calendar' : 'Australian financial year') : 'Six years · ' + (st.basis === 'cal' ? 'calendar' : 'financial year, 1 July – 30 June'),
+      yTicks: [top, top * 0.75, top * 0.5, top * 0.25, 0].map(mk), vb: `0 0 ${N * 100} ${H}`,
+      band, incA: line('inc', 0, Math.max(0, fullA)), incP: line('inc', Math.max(0, fullA), N - 1), expA: line('e', 0, Math.max(0, fullA)), expP: line('e', Math.max(0, fullA), N - 1),
+      todayX: (todayFrac * 100).toFixed(2) + '%', pts, leave: () => this.setState({ hover: -1 }),
+      unit, goals, split, splitTotal: m(monthlySav),
+      needInc: m(need), projInc: m(incM), projExp: m(expM), fireAge: String(fireAge),
+      gapText: gap >= 0 ? `Surplus of ${m(gap)} per month` : `Gap of ${m(-gap)} per month`, gapBg: gap >= 0 ? 'var(--goldSoft)' : 'var(--negSoft)', gapColor: gap >= 0 ? 'var(--goldInk)' : 'var(--neg)', gapIcon: gap >= 0 ? ICON.check : ICON.alert,
+      table,
+      exportCsv: () => this.props.onToast && this.props.onToast(`Exported ledger_projections_${st.view}_${st.basis}.csv · ${P.length} rows`)
+    };
+  }
+}
+</script>
+</body>
+</html>

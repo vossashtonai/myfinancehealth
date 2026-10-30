@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="padding:28px 32px 48px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:20px;">
+  <section style="grid-column:span 8;position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;overflow:hidden;">
+    <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div>
+        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);">Net worth</div>
+        <div style="font-family:'Playfair Display',serif;font-size:56px;font-weight:500;margin:10px 0 6px;font-variant-numeric:tabular-nums lining-nums;">{{ nwText }}</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mute);">
+          <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:var(--priSoft);color:var(--pri);font-weight:500;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg>{{ nwChange }}</span>
+          over 12 months
+        </div>
+      </div>
+      <div style="display:flex;gap:28px;font-size:13px;text-align:right;">
+        <div><div style="color:var(--mute);margin-bottom:4px;">Assets</div><div style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums;">{{ assetsText }}</div></div>
+        <div><div style="color:var(--mute);margin-bottom:4px;">Liabilities</div><div style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums;">−$25,800</div></div>
+      </div>
+    </div>
+    <div style="position:relative;height:200px;margin-top:26px;">
+      <div style="position:absolute;left:0;right:0;top:0;border-top:1px dashed var(--line);"></div>
+      <div style="position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--line);"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;border-top:1px solid var(--line);"></div>
+      <span style="position:absolute;right:0;top:-18px;font-size:11px;color:var(--mute);">$220k</span>
+      <span style="position:absolute;right:0;top:calc(50% - 18px);font-size:11px;color:var(--mute);">$185k</span>
+      <span style="position:absolute;right:0;bottom:4px;font-size:11px;color:var(--mute);">$150k</span>
+      <svg viewBox="0 0 1100 200" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">
+        <defs><linearGradient id="nwg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--pri);stop-opacity:.2"></stop><stop offset="1" style="stop-color:var(--pri);stop-opacity:0"></stop></linearGradient></defs>
+        <path d="{{ nwArea }}" fill="url(#nwg)"></path>
+        <path d="{{ nwLine }}" fill="none" stroke="var(--pri)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linecap="round"></path>
+      </svg>
+      <sc-for list="{{ nwPts }}" as="p" hint-placeholder-count="12">
+        <div onMouseEnter="{{ p.enter }}" onMouseLeave="{{ leave }}" style="position:absolute;top:0;bottom:0;left:{{ p.left }};width:8.5%;transform:translateX(-50%);cursor:crosshair;">
+          <div style="position:absolute;left:50%;bottom:{{ p.y }};width:9px;height:9px;border-radius:50%;background:var(--card);border:2px solid {{ p.ring }};transform:translate(-50%,50%) scale({{ p.sc }});transition:transform .2s;"></div>
+          <sc-if value="{{ p.active }}">
+            <div style="position:absolute;left:50%;bottom:calc({{ p.y }} + 14px);transform:translateX(-50%);z-index:3;padding:6px 10px;border-radius:8px;background:var(--ink);color:var(--card);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums;"><span style="opacity:.7;">{{ p.m }}</span> · {{ p.v }}</div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:var(--mute);"><span>Nov 2025</span><span>Feb</span><span>May</span><span>Aug</span><span>Oct 2026</span></div>
+  </section>
+
+  <section style="grid-column:span 4;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;display:flex;flex-direction:column;">
+    <div style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>Lifestyle check
+    </div>
+    <div style="font-size:14px;color:var(--mute);margin-top:16px;line-height:1.5;">At a 4% withdrawal, your invested assets could pay</div>
+    <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:500;margin:6px 0 2px;color:var(--goldInk);font-variant-numeric:tabular-nums lining-nums;">{{ lifeYear }}<span style="font-family:'Geist',sans-serif;font-size:14px;color:var(--mute);"> / year</span></div>
+    <div style="font-size:13px;color:var(--mute);">against $54,000 of annual expenses</div>
+    <div style="margin-top:22px;height:10px;border-radius:999px;background:var(--track);overflow:hidden;"><div style="width:{{ lifeW }};height:100%;background:var(--gold);border-radius:999px;"></div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--mute);"><span>Covers {{ lifePct }}</span><span>≈ {{ lifeMonth }} / month</span></div>
+    <div style="flex:1;"></div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;line-height:1.55;color:var(--mute);text-wrap:pretty;">Based on {{ investedText }} in ETFs, super and crypto. Excluding super (preserved until 60) it's {{ exSuperYear }} a year.</div>
+  </section>
+
+  <section style="grid-column:span 12;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);overflow:hidden;">
+    <div style="display:flex;align-items:center;gap:10px;padding:22px 24px 16px;">
+      <div style="flex:1;min-width:0;">
+        <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Assets</h2>
+        <div style="display:flex;align-items:center;gap:7px;margin-top:5px;font-size:12px;color:var(--mute);">
+          <span style="width:7px;height:7px;border-radius:50%;background:{{ liveDot }};box-shadow:0 0 0 3px {{ liveRing }};"></span>{{ liveText }}
+        </div>
+      </div>
+      <button onClick="{{ refreshPrices }}" title="Fetch the latest ETF and crypto prices" style="display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;opacity:{{ refreshOp }};" style-hover="border-color:var(--gold);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 7 13.5 15.5 8.5 10.5 2 17M16 7h6v6"></path></svg>{{ refreshLabel }}
+      </button>
+      <button onClick="{{ exportCsv }}" style="display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;" style-hover="border-color:var(--gold);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>Export CSV
+      </button>
+      <sc-if value="{{ notEditing }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ startEdit }}" style="display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"></path></svg>Update values
+        </button>
+      </sc-if>
+      <sc-if value="{{ editing }}">
+        <button onClick="{{ cancelEdit }}" style="height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;">Cancel</button>
+        <button onClick="{{ saveEdit }}" style="height:36px;padding:0 16px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Save values</button>
+      </sc-if>
+    </div>
+    <div style="display:grid;grid-template-columns:minmax(0,1.6fr) 110px 100px 120px 140px 150px 90px 110px;gap:14px;padding:12px 24px;background:var(--raised);border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px;color:var(--mute);text-align:right;">
+      <span style="text-align:left;">Holding</span><span style="text-align:left;">Type</span><span>Units</span><span>Cost basis</span><span>Current value</span><span>Gain / loss</span><span>Allocation</span><span>Updated</span>
+    </div>
+    <sc-for list="{{ assets }}" as="a" hint-placeholder-count="7">
+      <div style="display:grid;grid-template-columns:minmax(0,1.6fr) 110px 100px 120px 140px 150px 90px 110px;gap:14px;align-items:center;padding:13px 24px;border-bottom:1px solid var(--line);font-size:14px;text-align:right;font-variant-numeric:tabular-nums;">
+        <div style="display:flex;align-items:center;gap:12px;text-align:left;min-width:0;">
+          <div style="flex:none;width:32px;height:32px;border-radius:9px;background:var(--raised);color:{{ a.tColor }};display:grid;place-items:center;font-size:10px;font-weight:600;letter-spacing:.02em;">{{ a.badge }}</div>
+          <div style="min-width:0;"><div style="font-weight:500;">{{ a.name }}</div><div style="font-size:12px;color:var(--mute);">{{ a.sub }}</div></div>
+        </div>
+        <span style="text-align:left;font-size:13px;color:var(--mute);">{{ a.type }}</span>
+        <div style="color:var(--mute);line-height:1.3;">{{ a.units }}<sc-if value="{{ a.hasPrice }}"><div style="font-size:11px;">@ {{ a.price }}</div></sc-if></div>
+        <span style="color:var(--mute);">{{ a.cost }}</span>
+        <div>
+          <sc-if value="{{ a.edit }}"><input value="{{ a.draft }}" onChange="{{ a.onDraft }}" style="width:110px;height:32px;padding:0 8px;text-align:right;border-radius:8px;border:1px solid var(--gold);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;font-variant-numeric:tabular-nums;outline:none;"></sc-if>
+          <sc-if value="{{ a.noEdit }}"><span style="font-weight:500;">{{ a.value }}</span></sc-if>
+        </div>
+        <span style="color:{{ a.gColor }};">{{ a.gain }}</span>
+        <span>{{ a.alloc }}</span>
+        <div style="font-size:12px;color:var(--mute);line-height:1.3;">{{ a.updated }}<sc-if value="{{ a.hasDay }}"><div style="font-size:11px;color:{{ a.dayColor }};">{{ a.day }} today</div></sc-if></div>
+      </div>
+    </sc-for>
+  </section>
+
+  <section style="grid-column:span 5;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+    <h2 style="margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Asset allocation</h2>
+    <div style="display:flex;align-items:center;gap:28px;">
+      <div style="position:relative;flex:none;width:160px;height:160px;">
+        <svg width="160" height="160" viewBox="0 0 150 150" style="transform:rotate(-90deg);">
+          <sc-for list="{{ alloc }}" as="d" hint-placeholder-count="4"><circle cx="75" cy="75" r="60" fill="none" stroke="{{ d.color }}" stroke-width="18" stroke-dasharray="{{ d.dash }}" stroke-dashoffset="{{ d.off }}"></circle></sc-for>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;"><span style="font-size:11px;color:var(--mute);">Assets</span><span style="font-size:17px;font-weight:500;font-variant-numeric:tabular-nums;">{{ assetsText }}</span></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+        <sc-for list="{{ alloc }}" as="d" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+            <span style="width:8px;height:8px;border-radius:2px;background:{{ d.color }};"></span><span style="flex:1;">{{ d.name }}</span>
+            <span style="color:var(--mute);font-variant-numeric:tabular-nums;">{{ d.pct }}</span><span style="width:76px;text-align:right;font-variant-numeric:tabular-nums;">{{ d.amt }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="grid-column:span 7;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px 28px 12px;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+      <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Liabilities</h2>
+      <span style="font-size:14px;font-weight:500;font-variant-numeric:tabular-nums;">$25,800</span>
+    </div>
+    <div style="display:grid;grid-template-columns:minmax(0,1.4fr) 120px 120px 110px;gap:14px;padding:10px 0;font-size:12px;color:var(--mute);text-align:right;border-bottom:1px solid var(--line);">
+      <span style="text-align:left;">Name</span><span style="text-align:left;">Type</span><span>Balance</span><span>Interest</span>
+    </div>
+    <sc-for list="{{ liabs }}" as="l" hint-placeholder-count="2">
+      <div style="display:grid;grid-template-columns:minmax(0,1.4fr) 120px 120px 110px;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);font-size:14px;text-align:right;font-variant-numeric:tabular-nums;">
+        <div style="text-align:left;"><div style="font-weight:500;">{{ l.name }}</div><div style="font-size:12px;color:var(--mute);">{{ l.sub }}</div></div>
+        <span style="text-align:left;font-size:13px;color:var(--mute);">{{ l.type }}</span>
+        <span style="font-weight:500;">{{ l.bal }}</span>
+        <span style="color:var(--mute);">{{ l.rate }}</span>
+      </div>
+    </sc-for>
+    <div style="padding:14px 0;font-size:13px;color:var(--mute);">Car loan paid off in ~19 months at the current $650/month repayment.</div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const NW = [155000,158900,162100,166800,170400,174200,179500,184300,189600,195100,203930,208750];
+const MN = ['Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026','Oct 2026'];
+const m = n => (n < 0 ? '−' : '') + '$' + Math.abs(n).toLocaleString('en-AU', { maximumFractionDigits: 0 });
+const ASSETS = [
+  ['Vanguard Diversified High Growth', 'VDHG · ASX', 'ETF', 'ETF', '645', 34800, 42300, '28 Oct'],
+  ['iShares S&P 500', 'IVV · ASX', 'ETF', 'ETF', '310', 15200, 18650, '28 Oct'],
+  ['AustralianSuper', 'Balanced option', 'Super', 'SUP', '—', 52400, 64200, '30 Sep'],
+  ['Bitcoin', 'BTC · Swyftx', 'Crypto', 'BTC', '0.062', 6100, 9800, '28 Oct'],
+  ['High-Interest Savings', 'UBank · House deposit', 'Cash/Savings', 'HIS', '—', null, 68400, '30 Oct'],
+  ['Emergency Fund', 'ING Savings Maximiser', 'Cash/Savings', 'EMF', '—', null, 25000, '30 Oct'],
+  ['Everyday account', 'ING Orange Everyday', 'Cash/Savings', 'EVD', '—', null, 6200, '30 Oct']
+];
+
+// Rows priced live by the server (/api/prices), keyed by ASSETS index.
+const LIVE = { 0: 'VDHG', 1: 'IVV', 3: 'BTC' };
+const LIABILITIES = 25800, NW_YEAR_AGO = NW[0], ANNUAL_EXP = 54000;
+const px = n => '$' + n.toLocaleString('en-AU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const when = iso => new Date(iso).toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+
+class Component extends DCLogic {
+  state = { hover: -1, editing: false, drafts: {}, values: ASSETS.map(a => a[6]), prices: null, priceErr: '', refreshing: false };
+  componentDidMount() { this.loadPrices(false); }
+  async loadPrices(force) {
+    this.setState({ refreshing: true });
+    try {
+      const r = await fetch('/api/prices' + (force ? '/refresh' : ''), { method: force ? 'POST' : 'GET' });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Price feed unavailable');
+      const values = this.state.values.map((v, i) => LIVE[i] && data.quotes[LIVE[i]] ? data.quotes[LIVE[i]].value : v);
+      this.setState({ prices: data, values, priceErr: Object.keys(data.errors || {}).length ? 'Some prices could not be fetched' : '', refreshing: false });
+      if (force && this.props.onToast) this.props.onToast('Prices updated · ' + when(data.fetchedAt));
+    } catch (e) {
+      this.setState({ priceErr: e.message, refreshing: false });
+      if (force && this.props.onToast) this.props.onToast("Couldn't refresh prices");
+    }
+  }
+  renderVals() {
+    const dark = this.props.theme === 'dark', s = this.state;
+    const pal = dark ? ['#10B981', '#D4AF37', '#7DDCB8', '#3A3A3A'] : ['#0B6E4F', '#C9A227', '#8FC4AC', '#D6DBD4'];
+    const X = i => i * 100 + 0, Y = v => 200 - (v - 150000) / 70000 * 200;
+    let d = `M${X(0)},${Y(NW[0])}`;
+    for (let i = 0; i < 11; i++) { const p0 = NW[i - 1] ?? NW[i], p1 = NW[i], p2 = NW[i + 1], p3 = NW[i + 2] ?? p2; d += ` C${X(i) + 100 / 3},${(Y(p1) + (Y(p2) - Y(p0)) / 6).toFixed(1)} ${X(i + 1) - 100 / 3},${(Y(p2) - (Y(p3) - Y(p1)) / 6).toFixed(1)} ${X(i + 1)},${Y(p2).toFixed(1)}`; }
+    const total = s.values.reduce((a, b) => a + b, 0);
+    const assets = ASSETS.map((a, i) => {
+      const v = s.values[i], cost = a[5], g = cost == null ? null : v - cost;
+      const q = LIVE[i] && s.prices ? s.prices.quotes[LIVE[i]] : null, live = !!LIVE[i];
+      return { name: a[0], sub: a[1], type: a[2], badge: a[3], units: a[4], cost: cost == null ? '—' : m(cost), value: m(v),
+        gain: g == null ? '—' : `${g >= 0 ? '+' : '−'}${m(Math.abs(g))} · ${g >= 0 ? '+' : '−'}${Math.abs(g / cost * 100).toFixed(1)}%`, gColor: g == null ? 'var(--mute)' : g >= 0 ? 'var(--pri)' : 'var(--neg)',
+        alloc: (v / total * 100).toFixed(1) + '%', tColor: a[2] === 'Cash/Savings' ? 'var(--mute)' : a[2] === 'Crypto' ? 'var(--goldInk)' : 'var(--pri)',
+        hasPrice: !!q, price: q ? px(q.price) : '',
+        updated: q ? (q.stale ? 'Last ' : 'Live · ') + new Date(q.asOf).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }) : a[7],
+        hasDay: !!(q && q.changePct != null), day: q && q.changePct != null ? `${q.changePct >= 0 ? '+' : '−'}${Math.abs(q.changePct).toFixed(2)}%` : '',
+        dayColor: q && q.changePct < 0 ? 'var(--neg)' : 'var(--pri)',
+        edit: s.editing && !live, noEdit: !s.editing || live, draft: s.drafts[i] ?? String(v), onDraft: e => { const val = e.target.value; this.setState(st => ({ drafts: { ...st.drafts, [i]: val } })); } };
+    });
+    const byType = t => ASSETS.reduce((sum, a, i) => sum + (a[2] === t ? s.values[i] : 0), 0);
+    const types = [['ETFs', byType('ETF')], ['Superannuation', byType('Super')], ['Crypto', byType('Crypto')], ['Cash & savings', byType('Cash/Savings')]];
+    const R = 2 * Math.PI * 60; let acc = 0;
+    const alloc = types.map(([name, v], i) => { const len = v / total * R; const o = { name, color: pal[i], pct: (v / total * 100).toFixed(1) + '%', amt: m(v), dash: `${Math.max(0, len - 2).toFixed(2)} ${R.toFixed(2)}`, off: (-acc).toFixed(2) }; acc += len; return o; });
+    const nw = total - LIABILITIES, nwDiff = nw - NW_YEAR_AGO;
+    const invested = types[0][1] + types[1][1] + types[2][1], lifeY = invested * 0.04;
+    const pr = s.prices;
+    return {
+      nwText: m(Math.round(nw)), nwChange: `${nwDiff >= 0 ? '+' : '−'}${m(Math.abs(Math.round(nwDiff)))} · ${(nwDiff / NW_YEAR_AGO * 100).toFixed(1)}%`,
+      assetsText: m(Math.round(total)), investedText: m(Math.round(invested)),
+      lifeYear: m(Math.round(lifeY)), lifeMonth: m(Math.round(lifeY / 12 / 10) * 10), lifePct: (lifeY / ANNUAL_EXP * 100).toFixed(1) + '%',
+      lifeW: Math.min(100, lifeY / ANNUAL_EXP * 100).toFixed(1) + '%', exSuperYear: m(Math.round((invested - types[1][1]) * 0.04)),
+      liveText: s.refreshing && !pr ? 'Fetching live prices…' : pr ? `Live prices for ETFs & crypto · updated ${when(pr.fetchedAt)} · refreshes daily after market close` + (s.priceErr ? ` · ${s.priceErr}` : '') : `Live prices unavailable · ${s.priceErr || 'showing last saved values'}`,
+      liveDot: pr && !s.priceErr ? 'var(--pri)' : pr ? 'var(--gold)' : 'var(--neg)', liveRing: pr && !s.priceErr ? 'var(--priSoft)' : pr ? 'var(--goldSoft)' : 'var(--negSoft)',
+      refreshLabel: s.refreshing ? 'Refreshing…' : 'Refresh prices', refreshOp: s.refreshing ? 0.6 : 1,
+      refreshPrices: () => { if (!s.refreshing) this.loadPrices(true); },
+      nwLine: d, nwArea: d + ' L1100,200 L0,200 Z',
+      nwPts: NW.map((v, i) => ({ left: (i / 11 * 100).toFixed(2) + '%', y: ((v - 150000) / 70000 * 100).toFixed(2) + '%', m: MN[i], v: m(v), active: s.hover === i, sc: s.hover === i ? 1.4 : i === 11 ? 1.2 : 0, ring: i === 11 ? 'var(--gold)' : 'var(--pri)', enter: () => this.setState({ hover: i }) })),
+      leave: () => this.setState({ hover: -1 }),
+      assets, alloc,
+      liabs: [
+        { name: 'Car loan', sub: 'Plenti · $650/month', type: 'Car loan', bal: '$11,200', rate: '7.9% p.a.' },
+        { name: 'HECS-HELP', sub: 'Repaid through tax', type: 'HECS-HELP', bal: '$14,600', rate: 'CPI indexed' }
+      ],
+      editing: s.editing, notEditing: !s.editing,
+      startEdit: () => this.setState({ editing: true, drafts: {} }), cancelEdit: () => this.setState({ editing: false, drafts: {} }),
+      saveEdit: () => {
+        const values = s.values.map((v, i) => { const n = parseFloat(String(s.drafts[i] ?? v).replace(/[,$]/g, '')); return n >= 0 ? n : v; });
+        this.setState({ editing: false, values, drafts: {} });
+        this.props.onToast && this.props.onToast('Values updated · last updated 30 Oct 2026');
+      },
+      exportCsv: () => this.props.onToast && this.props.onToast('Exported 2 files · investments + liabilities')
+    };
+  }
+}
+</script>
+</body>
+</html>

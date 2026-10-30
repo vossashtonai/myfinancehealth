@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E6E8E3;font-family:'Geist',system-ui,sans-serif}a{color:#0B6E4F}a:hover{color:#08553D}</style>
+</helmet>
+<section style="display:flex;flex-direction:column;gap:120px;padding:96px;width:max-content;">
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <div style="font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#5F6B63;">Ledger · all screens</div>
+    <div style="font-size:40px;font-family:Georgia,serif;color:#111511;">Light mode left, dark mode right</div>
+  </div>
+  <div id="01" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">01</span>Dashboard</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="0" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="0" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="02" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">02</span>Transactions</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="1" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="1" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="02b" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">02b</span>Add Transaction modal · validation errors (dark)</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;height:1000px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="1" modal="{{ yes }}" hint-size="1440px,1000px"></dc-import>
+      </div>
+      <div style="width:1440px;height:1000px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="1" modal="{{ yes }}" modal-errors="{{ yes }}" hint-size="1440px,1000px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="02c" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">02c</span>Transactions · empty state (new template user)</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;height:900px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="1" empty-txns="{{ yes }}" hint-size="1440px,900px"></dc-import>
+      </div>
+      <div style="width:1440px;height:900px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="1" empty-txns="{{ yes }}" hint-size="1440px,900px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="03" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">03</span>Budget</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="2" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="2" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="04" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">04</span>Income</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="3" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="3" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="05" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">05</span>Projections</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="4" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="4" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="06" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">06</span>Goals</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="5" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="5" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="06b" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">06b</span>Goals · House Deposit detail</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="5" goal-detail="{{ yes }}" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="5" goal-detail="{{ yes }}" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="07" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">07</span>Investments & Net Worth</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="6" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="6" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="08" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">08</span>FIRE Calculator</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="7" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="7" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="09" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">09</span>AI Assistant · full page</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="8" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="8" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="09b" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">09b</span>AI Assistant · slide-out panel</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;height:1000px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="0" ai="{{ yes }}" hint-size="1440px,1000px"></dc-import>
+      </div>
+      <div style="width:1440px;height:1000px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="2" ai="{{ yes }}" hint-size="1440px,1000px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="10" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">10</span>Settings · Google Sheet (connected / sync error)</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="9" settings-tab="data" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="9" settings-tab="data" sync="error" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="10b" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">10b</span>Settings · Export Centre</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="9" settings-tab="export" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="9" settings-tab="export" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="10c" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">10c</span>Settings · Security</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);background:#F7F8F5;">
+        <dc-import name="Dashboard" theme="light" page="9" settings-tab="security" hint-size="1440px,1400px"></dc-import>
+      </div>
+      <div style="width:1440px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);background:#0A0A0A;">
+        <dc-import name="Dashboard" theme="dark" page="9" settings-tab="security" hint-size="1440px,1400px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="11" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">11</span>Login · default (light) / incorrect password (dark)</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;height:900px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);">
+        <dc-import name="Login" theme="light" mode="login" hint-size="1440px,900px"></dc-import>
+      </div>
+      <div style="width:1440px;height:900px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);">
+        <dc-import name="Login" theme="dark" mode="login" state="error" hint-size="1440px,900px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="11b" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">11b</span>Session locked (light) / too many attempts (dark)</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;height:900px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);">
+        <dc-import name="Login" theme="light" mode="locked" hint-size="1440px,900px"></dc-import>
+      </div>
+      <div style="width:1440px;height:900px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);">
+        <dc-import name="Login" theme="dark" mode="login" state="cooldown" hint-size="1440px,900px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="12" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">12</span>Onboarding · welcome (light) / set your password (dark)</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;height:900px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);">
+        <dc-import name="Onboarding" theme="light" step="{{ zero }}" hint-size="1440px,900px"></dc-import>
+      </div>
+      <div style="width:1440px;height:900px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);">
+        <dc-import name="Onboarding" theme="dark" step="{{ one }}" hint-size="1440px,900px"></dc-import>
+      </div>
+    </div>
+  </div>
+  <div id="12b" style="display:flex;flex-direction:column;gap:18px;">
+    <div style="display:flex;align-items:center;gap:12px;font-size:18px;color:#111511;"><span style="padding:4px 10px;border-radius:6px;background:#111511;color:#fff;font-size:13px;font-weight:500;">12b</span>Onboarding · connect sheet (light) / monthly budget (dark)</div>
+    <div style="display:flex;gap:64px;align-items:flex-start;">
+      <div style="width:1440px;height:900px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.12);">
+        <dc-import name="Onboarding" theme="light" step="{{ three }}" hint-size="1440px,900px"></dc-import>
+      </div>
+      <div style="width:1440px;height:900px;border-radius:14px;overflow:hidden;transform:translateZ(0);box-shadow:0 30px 80px rgba(0,0,0,.3);">
+        <dc-import name="Onboarding" theme="dark" step="{{ five }}" hint-size="1440px,900px"></dc-import>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() { return { yes: true, zero: 0, one: 1, three: 3, five: 5 }; }
+}
+</script>
+</body>
+</html>

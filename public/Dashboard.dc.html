@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./ai-client.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+a:hover{text-decoration:underline}
+*:focus-visible{outline:2px solid #C9A227;outline-offset:2px;border-radius:6px}
+</style>
+</helmet>
+<div style="{{ rootStyle }}">
+
+  <!-- Sidebar -->
+  <aside style="flex:none;width:{{ sideW }};transition:width .3s ease;background:var(--side);border-right:1px solid var(--line);">
+    <div style="position:sticky;top:0;height:100vh;max-height:100%;min-height:720px;display:flex;flex-direction:column;padding:24px 14px;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;gap:12px;padding:0 10px;height:40px;">
+        <div style="flex:none;width:30px;height:30px;border-radius:8px;background:var(--pri);display:grid;place-items:center;">
+          <div style="width:9px;height:9px;transform:rotate(45deg);background:var(--gold);"></div>
+        </div>
+        <sc-if value="{{ expanded }}" hint-placeholder-val="{{ true }}">
+          <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:500;letter-spacing:.01em;">Ledger</div>
+        </sc-if>
+      </div>
+      <div style="height:1px;margin:22px 10px 18px;background:linear-gradient(90deg,var(--gold),transparent);opacity:.5;"></div>
+      <nav style="display:flex;flex-direction:column;gap:2px;">
+        <sc-for list="{{ nav }}" as="item" hint-placeholder-count="10">
+          <a href="#" onClick="{{ item.go }}" title="{{ item.label }}" style="display:flex;align-items:center;gap:12px;height:40px;padding:0 12px;border-radius:10px;font-size:14px;font-weight:{{ item.weight }};color:{{ item.color }};background:{{ item.bg }};transition:background .2s,color .2s;text-decoration:none;" style-hover="background:var(--raised);text-decoration:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="{{ item.icon }}"></path></svg>
+            <sc-if value="{{ item.showLabel }}" hint-placeholder-val="{{ true }}">
+              <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ item.label }}</span>
+            </sc-if>
+            <sc-if value="{{ item.dot }}">
+              <span style="width:5px;height:5px;border-radius:50%;background:var(--gold);"></span>
+            </sc-if>
+          </a>
+        </sc-for>
+      </nav>
+      <div style="flex:1;"></div>
+      <button onClick="{{ toggleSide }}" title="Collapse sidebar" style="display:flex;align-items:center;gap:12px;height:36px;padding:0 12px;border:0;background:transparent;color:var(--mute);font:inherit;font-size:13px;cursor:pointer;border-radius:10px;" style-hover="background:var(--raised);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M3 3h18v18H3zM9 3v18"></path></svg>
+        <sc-if value="{{ expanded }}" hint-placeholder-val="{{ true }}"><span>Collapse</span></sc-if>
+      </button>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px;padding:12px 10px 0;border-top:1px solid var(--line);">
+        <div style="flex:none;width:34px;height:34px;border-radius:50%;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;font-family:'Playfair Display',serif;font-size:15px;border:1px solid var(--gold);">A</div>
+        <sc-if value="{{ expanded }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:500;">Alex</div>
+            <div style="font-size:12px;color:var(--mute);">Demo profile</div>
+          </div>
+          <button onClick="{{ doLock }}" title="Lock" style="width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--mute);display:grid;place-items:center;cursor:pointer;" style-hover="color:var(--ink);border-color:var(--gold);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11h14v11H5zM7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </button>
+          <button onClick="{{ doLogout }}" title="Log out" style="width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--mute);display:grid;place-items:center;cursor:pointer;" style-hover="color:var(--ink);border-color:var(--gold);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>
+          </button>
+        </sc-if>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;">
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 32px;background:var(--goldSoft);border-bottom:1px solid var(--line);font-size:13px;">
+      <span style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--goldInk);">Demo mode</span>
+      <span style="color:var(--mute);">You're viewing sample data. Connect your Google Sheet to use your own.</span>
+      <a href="#" onClick="{{ goSheet }}" style="margin-left:auto;color:var(--goldInk);font-weight:500;">Connect sheet →</a>
+    </div>
+
+    <header style="display:flex;align-items:center;gap:16px;padding:22px 32px;border-bottom:1px solid var(--line);">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;color:var(--mute);margin-bottom:2px;">Good afternoon, Alex</div>
+        <h1 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:30px;letter-spacing:-.005em;">{{ pageTitle }}</h1>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;height:38px;padding:0 4px;border:1px solid var(--line);border-radius:10px;background:var(--card);">
+        <button title="Previous month" style="width:30px;height:30px;border:0;background:transparent;color:var(--mute);cursor:pointer;display:grid;place-items:center;border-radius:7px;" style-hover="background:var(--raised);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+        <span style="font-size:14px;font-weight:500;min-width:108px;text-align:center;">October 2026</span>
+        <button title="Next month" style="width:30px;height:30px;border:0;background:transparent;color:var(--mute);cursor:pointer;display:grid;place-items:center;border-radius:7px;" style-hover="background:var(--raised);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+      </div>
+      <button onClick="{{ goSheet }}" title="Google Sheet sync" style="display:flex;align-items:center;gap:8px;font:inherit;font-size:13px;color:{{ syncColor }};padding:0 10px;height:34px;border-radius:999px;border:1px solid {{ syncBorder }};background:transparent;cursor:pointer;">
+        <span style="width:7px;height:7px;border-radius:50%;background:{{ syncDot }};box-shadow:0 0 0 3px {{ syncRing }};opacity:{{ syncPulse }};transition:opacity .4s;"></span>
+        {{ syncText }}
+      </button>
+      <button onClick="{{ goExport }}" title="Export Centre" style="width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--mute);display:grid;place-items:center;cursor:pointer;" style-hover="border-color:var(--gold);color:var(--ink);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
+      </button>
+      <button onClick="{{ toggleTheme }}" title="Toggle theme" aria-label="Toggle light and dark mode" style="position:relative;width:64px;height:34px;border-radius:999px;border:1px solid var(--line);background:var(--raised);cursor:pointer;padding:0;">
+        <span style="position:absolute;top:3px;left:{{ knobLeft }};width:26px;height:26px;border-radius:50%;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .35s cubic-bezier(.4,0,.2,1);display:grid;place-items:center;color:var(--goldInk);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ themeIcon }}"></path></svg>
+        </span>
+      </button>
+      <button onClick="{{ openAi }}" title="AI assistant (K)" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;cursor:pointer;" style-hover="border-color:var(--gold);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"></path></svg>
+        Ask
+        <span style="font-size:11px;color:var(--mute);border:1px solid var(--line);border-radius:5px;padding:1px 6px;">K</span>
+      </button>
+      <button onClick="{{ openModal }}" title="Add transaction (N)" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:14px;font-weight:500;cursor:pointer;transition:filter .2s;" style-hover="filter:brightness(1.08);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        Add Transaction
+      </button>
+    </header>
+
+    <sc-if value="{{ pg.p1 }}"><dc-import name="Transactions" theme="{{ theme }}" empty="{{ emptyTxns }}" on-add="{{ openModal }}" on-toast="{{ toast }}" keys="{{ keys }}" search-tick="{{ searchTick }}" hint-size="100%,1100px"></dc-import></sc-if>
+    <sc-if value="{{ pg.p2 }}"><dc-import name="Budget" theme="{{ theme }}" on-toast="{{ toast }}" hint-size="100%,1000px"></dc-import></sc-if>
+    <sc-if value="{{ pg.p3 }}"><dc-import name="Income" theme="{{ theme }}" on-toast="{{ toast }}" hint-size="100%,1000px"></dc-import></sc-if>
+    <sc-if value="{{ pg.p4 }}"><dc-import name="Projections" theme="{{ theme }}" on-toast="{{ toast }}" hint-size="100%,1600px"></dc-import></sc-if>
+    <sc-if value="{{ pg.p5 }}"><dc-import name="Goals" theme="{{ theme }}" detail="{{ goalDetail }}" on-toast="{{ toast }}" hint-size="100%,1100px"></dc-import></sc-if>
+    <sc-if value="{{ pg.p6 }}"><dc-import name="Investments" theme="{{ theme }}" on-toast="{{ toast }}" hint-size="100%,1400px"></dc-import></sc-if>
+    <sc-if value="{{ pg.p7 }}"><dc-import name="FIRE" theme="{{ theme }}" hint-size="100%,1100px"></dc-import></sc-if>
+    <sc-if value="{{ pg.p8 }}"><dc-import name="Assistant" theme="{{ theme }}" hint-size="100%,900px"></dc-import></sc-if>
+    <sc-if value="{{ pg.p9 }}"><dc-import name="Settings" theme="{{ theme }}" tab="{{ settingsTab }}" sync="{{ sync }}" on-sync="{{ setSync }}" on-theme="{{ setTheme }}" on-toast="{{ toast }}" on-onboard="{{ openOnboard }}" hint-size="100%,1100px"></dc-import></sc-if>
+    <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+    <div style="padding:28px 32px 48px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:20px;">
+
+      <!-- Net worth hero -->
+      <section style="grid-column:span 6;position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;transition:transform .25s,box-shadow .25s;overflow:hidden;" style-hover="transform:translateY(-2px);box-shadow:var(--shH);">
+        <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);">Net worth</div>
+          <a href="#" onClick="{{ goInvest }}" style="font-size:13px;color:var(--mute);">Investments →</a>
+        </div>
+        <div style="font-family:'Playfair Display',serif;font-size:60px;line-height:1.1;font-weight:500;margin:14px 0 10px;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em;">{{ nwText }}</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;">
+          <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:var(--priSoft);color:var(--pri);font-weight:500;font-variant-numeric:tabular-nums;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg>
+            +$4,820 · 2.4%
+          </span>
+          <span style="color:var(--mute);">vs September</span>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:24px;margin-top:22px;">
+          <div style="display:flex;gap:28px;font-size:13px;">
+            <div><div style="color:var(--mute);margin-bottom:4px;">Assets</div><div style="font-size:16px;font-weight:500;font-variant-numeric:tabular-nums;">$234,550</div></div>
+            <div><div style="color:var(--mute);margin-bottom:4px;">Liabilities</div><div style="font-size:16px;font-weight:500;font-variant-numeric:tabular-nums;">$25,800</div></div>
+            <div><div style="color:var(--mute);margin-bottom:4px;">12 months</div><div style="font-size:16px;font-weight:500;color:var(--pri);font-variant-numeric:tabular-nums;">+$53,750</div></div>
+          </div>
+          <svg viewBox="0 0 240 64" preserveAspectRatio="none" style="flex:1;height:64px;min-width:0;overflow:visible;">
+            <defs><linearGradient id="nwfill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--pri);stop-opacity:.18"></stop><stop offset="1" style="stop-color:var(--pri);stop-opacity:0"></stop></linearGradient></defs>
+            <path d="{{ sparkArea }}" fill="url(#nwfill)"></path>
+            <path d="{{ sparkLine }}" fill="none" stroke="var(--pri)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round"></path>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Savings rate -->
+      <section style="grid-column:span 3;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column;" style-hover="transform:translateY(-2px);box-shadow:var(--shH);">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);">Savings rate</div>
+        <div style="flex:1;display:grid;place-items:center;padding:16px 0 12px;">
+          <div style="position:relative;width:132px;height:132px;">
+            <svg width="132" height="132" viewBox="0 0 100 100" style="transform:rotate(-90deg);">
+              <circle cx="50" cy="50" r="44" fill="none" stroke="var(--track)" stroke-width="5"></circle>
+              <circle cx="50" cy="50" r="44" fill="none" stroke="var(--pri)" stroke-width="5" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="{{ savOffset }}"></circle>
+            </svg>
+            <div style="position:absolute;inset:0;display:grid;place-items:center;font-family:'Playfair Display',serif;font-size:36px;font-weight:500;font-variant-numeric:tabular-nums lining-nums;">{{ savText }}</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--mute);text-align:center;line-height:1.5;">$5,348.55 saved of $9,912.40<br>12-month average 53%</div>
+      </section>
+
+      <!-- FIRE -->
+      <section style="grid-column:span 3;position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column;overflow:hidden;" style-hover="transform:translateY(-2px);box-shadow:var(--shH);">
+        <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+        <div style="display:flex;justify-content:space-between;">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);">FIRE progress</div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+        </div>
+        <div style="flex:1;display:grid;place-items:center;padding:16px 0 12px;">
+          <div style="position:relative;width:132px;height:132px;">
+            <svg width="132" height="132" viewBox="0 0 100 100" style="transform:rotate(-90deg);">
+              <circle cx="50" cy="50" r="44" fill="none" stroke="var(--track)" stroke-width="5"></circle>
+              <circle cx="50" cy="50" r="44" fill="none" stroke="var(--gold)" stroke-width="5" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="{{ fireOffset }}"></circle>
+            </svg>
+            <div style="position:absolute;inset:0;display:grid;place-items:center;font-family:'Playfair Display',serif;font-size:36px;font-weight:500;color:var(--goldInk);font-variant-numeric:tabular-nums lining-nums;">{{ fireText }}</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--mute);text-align:center;line-height:1.5;">$134,950 of $1.35M<br>Projected FIRE age <span style="color:var(--ink);font-weight:500;">47</span></div>
+      </section>
+
+      <!-- This month -->
+      <section style="grid-column:span 7;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;transition:transform .25s,box-shadow .25s;" style-hover="transform:translateY(-2px);box-shadow:var(--shH);">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:22px;">
+          <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">This month</h2>
+          <span style="font-size:13px;color:var(--mute);">1–30 October</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mute);margin-bottom:6px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--pri);"></span>Income</div>
+            <div style="font-size:26px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em;">+$9,912.40</div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mute);margin-bottom:6px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--neg);"></span>Expenses</div>
+            <div style="font-size:26px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em;">−$4,563.85</div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mute);margin-bottom:6px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--gold);"></span>Saved</div>
+            <div style="font-size:26px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em;color:var(--goldInk);">$5,348.55</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:3px;height:10px;margin-top:24px;border-radius:999px;overflow:hidden;">
+          <div style="width:{{ expW }};background:var(--neg);opacity:.75;transition:width .3s;"></div>
+          <div style="flex:1;background:var(--gold);"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-top:8px;font-variant-numeric:tabular-nums;">
+          <span>46% spent</span><span>54% saved</span>
+        </div>
+      </section>
+
+      <!-- AI insight -->
+      <section style="grid-column:span 5;position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column;overflow:hidden;" style-hover="transform:translateY(-2px);box-shadow:var(--shH);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="width:30px;height:30px;border-radius:8px;background:var(--goldSoft);display:grid;place-items:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"></path></svg>
+          </div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);">Insight</div>
+        </div>
+        <p style="margin:0;font-family:'Playfair Display',serif;font-size:20px;line-height:1.45;text-wrap:pretty;flex:1;">You're spending 18% less on dining out than last month. At this pace, you'll hit your house deposit 3 months early.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:18px;">
+          <button onClick="{{ openAi }}" style="height:34px;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:13px;cursor:pointer;" style-hover="border-color:var(--gold);">Ask a follow-up</button>
+          <span style="font-size:11px;color:var(--mute);">General information, not financial advice</span>
+        </div>
+      </section>
+
+      <!-- Goals header -->
+      <div style="grid-column:span 12;display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
+        <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Goals</h2>
+        <a href="#" onClick="{{ goProj }}" style="display:flex;align-items:center;gap:10px;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:13px;text-decoration:none;" style-hover="border-color:var(--gold);text-decoration:none;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 7 13.5 15.5 8.5 10.5 2 17M16 7h6v6"></path></svg>
+          <span style="color:var(--mute);">Projected this year</span>
+          <span style="font-weight:500;font-variant-numeric:tabular-nums;">$118,500</span>
+          <span style="color:var(--line);">|</span>
+          <span style="color:var(--mute);">House Deposit</span>
+          <span style="font-weight:500;color:var(--goldInk);">Ahead by 4 months</span>
+          <span style="color:var(--mute);">→</span>
+        </a>
+      </div>
+
+      <!-- Goals strip -->
+      <div style="grid-column:span 12;display:grid;grid-template-columns:minmax(0,2fr) repeat(3,minmax(0,1fr));gap:20px;">
+        <section style="position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;transition:transform .25s,box-shadow .25s;overflow:hidden;" style-hover="transform:translateY(-2px);box-shadow:var(--shH);">
+          <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:38px;height:38px;border-radius:10px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"></path></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:16px;font-weight:500;">House Deposit</div>
+              <div style="font-size:13px;color:var(--mute);">Target Dec 2028 · Featured</div>
+            </div>
+            <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:999px;background:var(--goldSoft);color:var(--goldInk);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg>
+              Ahead by 4 months
+            </span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin:22px 0 16px;">
+            <span style="font-family:'Playfair Display',serif;font-size:40px;font-weight:500;font-variant-numeric:tabular-nums lining-nums;">{{ houseText }}</span>
+            <span style="font-size:15px;color:var(--mute);font-variant-numeric:tabular-nums;">of $120,000</span>
+            <span style="margin-left:auto;font-size:15px;font-weight:500;font-variant-numeric:tabular-nums;">57%</span>
+          </div>
+          <div style="position:relative;height:8px;border-radius:999px;background:var(--track);">
+            <div style="position:absolute;left:0;top:0;bottom:0;width:{{ houseW }};border-radius:999px;background:var(--pri);"></div>
+            <div style="position:absolute;left:25%;top:-3px;width:2px;height:14px;background:var(--gold);border-radius:1px;"></div>
+            <div style="position:absolute;left:50%;top:-3px;width:2px;height:14px;background:var(--gold);border-radius:1px;"></div>
+            <div style="position:absolute;left:75%;top:-3px;width:2px;height:14px;background:var(--gold);border-radius:1px;"></div>
+          </div>
+          <div style="position:relative;height:16px;margin-top:6px;font-size:11px;color:var(--mute);font-variant-numeric:tabular-nums;">
+            <span style="position:absolute;left:25%;transform:translateX(-50%);">25%</span>
+            <span style="position:absolute;left:50%;transform:translateX(-50%);color:var(--goldInk);">50% ✓</span>
+            <span style="position:absolute;left:75%;transform:translateX(-50%);">75%</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;">
+            <div><div style="color:var(--mute);margin-bottom:4px;">Monthly needed</div><div style="font-size:15px;font-weight:500;font-variant-numeric:tabular-nums;">$2,060</div></div>
+            <div><div style="color:var(--mute);margin-bottom:4px;">Contributing</div><div style="font-size:15px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--pri);">$2,500</div></div>
+            <div><div style="color:var(--mute);margin-bottom:4px;">Est. completion</div><div style="font-size:15px;font-weight:500;">Aug 2028</div></div>
+          </div>
+        </section>
+        <sc-for list="{{ goals }}" as="g" hint-placeholder-count="3">
+          <section style="position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:24px;transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column;" style-hover="transform:translateY(-2px);box-shadow:var(--shH);">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="width:34px;height:34px;border-radius:9px;background:{{ g.iconBg }};color:{{ g.iconColor }};display:grid;place-items:center;">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ g.icon }}"></path></svg>
+              </div>
+              <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:999px;background:{{ g.sBg }};color:{{ g.sColor }};">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="{{ g.sIcon }}"></path></svg>
+                {{ g.status }}
+              </span>
+            </div>
+            <div style="font-size:15px;font-weight:500;margin-top:16px;">{{ g.name }}</div>
+            <div style="font-size:12px;color:var(--mute);margin-top:2px;">{{ g.date }}</div>
+            <div style="flex:1;min-height:16px;"></div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px;font-variant-numeric:tabular-nums;">
+              <span style="font-size:20px;font-weight:500;letter-spacing:-.01em;">{{ g.saved }}</span>
+              <span style="font-size:13px;color:var(--mute);">/ {{ g.target }}</span>
+            </div>
+            <div style="height:6px;border-radius:999px;background:var(--track);overflow:hidden;">
+              <div style="height:100%;width:{{ g.w }};border-radius:999px;background:{{ g.bar }};"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums;">
+              <span>{{ g.pct }}</span><span>{{ g.note }}</span>
+            </div>
+          </section>
+        </sc-for>
+      </div>
+
+      <!-- Cash flow -->
+      <section style="grid-column:span 8;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+          <div>
+            <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Cash flow</h2>
+            <div style="font-size:13px;color:var(--mute);margin-top:4px;">Nov 2025 – Oct 2026</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:18px;font-size:13px;color:var(--mute);">
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:3px;border-radius:2px;background:var(--pri);"></span>Revenue</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:3px;border-radius:2px;background:var(--neg);"></span>Expenses</span>
+            <div style="display:flex;padding:3px;border-radius:9px;background:var(--raised);border:1px solid var(--line);">
+              <button onClick="{{ cfSetLines }}" style="height:26px;padding:0 10px;border:0;border-radius:6px;font:inherit;font-size:12px;cursor:pointer;background:{{ cfLinesBg }};color:{{ cfLinesColor }};">Lines</button>
+              <button onClick="{{ cfSetBars }}" style="height:26px;padding:0 10px;border:0;border-radius:6px;font:inherit;font-size:12px;cursor:pointer;background:{{ cfBarsBg }};color:{{ cfBarsColor }};">Bars</button>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ cfLines }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;gap:12px;">
+          <div style="display:flex;flex-direction:column;justify-content:space-between;height:220px;font-size:11px;color:var(--mute);text-align:right;font-variant-numeric:tabular-nums;margin-top:-6px;">
+            <span>$12k</span><span>$9k</span><span>$6k</span><span>$3k</span><span>$0</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="position:relative;height:208px;border-bottom:1px solid var(--line);">
+              <div style="position:absolute;left:0;right:0;top:0;border-top:1px dashed var(--line);"></div>
+              <div style="position:absolute;left:0;right:0;top:25%;border-top:1px dashed var(--line);"></div>
+              <div style="position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--line);"></div>
+              <div style="position:absolute;left:0;right:0;top:75%;border-top:1px dashed var(--line);"></div>
+              <svg viewBox="0 0 1200 208" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">
+                <defs><linearGradient id="cfinc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--pri);stop-opacity:.16"></stop><stop offset="1" style="stop-color:var(--pri);stop-opacity:0"></stop></linearGradient></defs>
+                <path d="{{ incArea }}" fill="url(#cfinc)"></path>
+                <path d="{{ expArea }}" fill="var(--neg)" fill-opacity=".07"></path>
+                <path d="{{ incLine }}" fill="none" stroke="var(--pri)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linecap="round"></path>
+                <path d="{{ expLine }}" fill="none" stroke="var(--neg)" stroke-width="2.5" vector-effect="non-scaling-stroke" stroke-linecap="round"></path>
+              </svg>
+              <sc-for list="{{ flow }}" as="f" hint-placeholder-count="12">
+                <div onMouseEnter="{{ f.colEnter }}" onMouseLeave="{{ leaveLine }}" style="position:absolute;top:0;bottom:0;left:{{ f.left }};width:8.3333%;cursor:crosshair;">
+                  <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--mute);opacity:{{ f.guideOp }};transition:opacity .2s;"></div>
+                  <div style="position:absolute;left:50%;bottom:{{ f.incY }};width:9px;height:9px;border-radius:50%;background:var(--card);border:2px solid var(--pri);transform:translate(-50%,50%) scale({{ f.dotScale }});transition:transform .25s cubic-bezier(.3,1.4,.5,1);"></div>
+                  <div style="position:absolute;left:50%;bottom:{{ f.expY }};width:9px;height:9px;border-radius:50%;background:var(--card);border:2px solid var(--neg);transform:translate(-50%,50%) scale({{ f.dotScale }});transition:transform .25s cubic-bezier(.3,1.4,.5,1);"></div>
+                  <div style="position:absolute;left:50%;bottom:calc({{ f.incY }} + 14px);transform:translate(-50%,{{ f.tipY }});opacity:{{ f.tipOp }};transition:opacity .2s,transform .25s;pointer-events:none;z-index:3;padding:5px 9px;border-radius:8px;background:var(--pri);color:var(--priInk);font-size:12px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 6px 18px rgba(0,0,0,.18);">+{{ f.inc }}</div>
+                  <div style="position:absolute;left:50%;top:calc(100% - {{ f.expY }} + 14px);transform:translate(-50%,{{ f.tipYn }});opacity:{{ f.tipOp }};transition:opacity .2s,transform .25s;pointer-events:none;z-index:3;padding:5px 9px;border-radius:8px;background:var(--neg);color:#FFFFFF;font-size:12px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 6px 18px rgba(0,0,0,.18);">−{{ f.exp }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;margin-top:10px;">
+              <sc-for list="{{ flow }}" as="f" hint-placeholder-count="12">
+                <div style="flex:1;text-align:center;font-size:11px;color:{{ f.mColor }};font-weight:{{ f.mWeight }};">{{ f.m }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ cfBars }}">
+        <div style="display:flex;gap:12px;">
+          <div style="display:flex;flex-direction:column;justify-content:space-between;height:220px;font-size:11px;color:var(--mute);text-align:right;font-variant-numeric:tabular-nums;margin-top:-6px;padding-bottom:0;">
+            <span>$12k</span><span>$9k</span><span>$6k</span><span>$3k</span><span>$0</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="position:relative;height:208px;display:flex;align-items:flex-end;gap:6px;border-bottom:1px solid var(--line);">
+              <div style="position:absolute;left:0;right:0;top:0;border-top:1px dashed var(--line);"></div>
+              <div style="position:absolute;left:0;right:0;top:25%;border-top:1px dashed var(--line);"></div>
+              <div style="position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--line);"></div>
+              <div style="position:absolute;left:0;right:0;top:75%;border-top:1px dashed var(--line);"></div>
+              <sc-for list="{{ flow }}" as="f" hint-placeholder-count="12">
+                <div onMouseLeave="{{ leaveFlow }}" style="position:relative;flex:1;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px;cursor:default;">
+                  <div onMouseEnter="{{ f.incEnter }}" style="position:relative;width:34%;max-width:16px;height:{{ f.incH }};background:var(--pri);border-radius:4px 4px 1px 1px;opacity:{{ f.incOp }};transform:{{ f.incScale }};transform-origin:bottom;transition:opacity .25s,transform .25s cubic-bezier(.3,1.4,.5,1);cursor:pointer;">
+                    <div style="position:absolute;bottom:calc(100% + 8px);left:50%;transform:translate(-50%,{{ f.incTipY }});opacity:{{ f.incTipOp }};transition:opacity .2s,transform .25s cubic-bezier(.3,1.4,.5,1);pointer-events:none;z-index:3;padding:6px 10px;border-radius:8px;background:var(--pri);color:var(--priInk);font-size:12px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 6px 18px rgba(0,0,0,.18);">
+                      <div style="font-size:10px;font-weight:500;opacity:.8;letter-spacing:.04em;text-transform:uppercase;">{{ f.m }} income</div>
+                      +{{ f.inc }}
+                    </div>
+                  </div>
+                  <div onMouseEnter="{{ f.expEnter }}" style="position:relative;width:34%;max-width:16px;height:{{ f.expH }};background:var(--neg);border-radius:4px 4px 1px 1px;opacity:{{ f.expOp }};transform:{{ f.expScale }};transform-origin:bottom;transition:opacity .25s,transform .25s cubic-bezier(.3,1.4,.5,1);cursor:pointer;">
+                    <div style="position:absolute;bottom:calc(100% + 8px);left:50%;transform:translate(-50%,{{ f.expTipY }});opacity:{{ f.expTipOp }};transition:opacity .2s,transform .25s cubic-bezier(.3,1.4,.5,1);pointer-events:none;z-index:3;padding:6px 10px;border-radius:8px;background:var(--neg);color:#FFFFFF;font-size:12px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 6px 18px rgba(0,0,0,.18);">
+                      <div style="font-size:10px;font-weight:500;opacity:.85;letter-spacing:.04em;text-transform:uppercase;">{{ f.m }} expenses</div>
+                      −{{ f.exp }}
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:10px;">
+              <sc-for list="{{ flow }}" as="f" hint-placeholder-count="12">
+                <div style="flex:1;text-align:center;font-size:11px;color:var(--mute);">{{ f.m }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums;">
+          <div><div style="margin-bottom:4px;">12-month revenue</div><div style="font-size:16px;font-weight:500;color:var(--ink);">$118,267</div></div>
+          <div><div style="margin-bottom:4px;">12-month expenses</div><div style="font-size:16px;font-weight:500;color:var(--ink);">$55,894</div></div>
+          <div><div style="margin-bottom:4px;">Net saved</div><div style="font-size:16px;font-weight:500;color:var(--pri);">+$62,374</div></div>
+          <div><div style="margin-bottom:4px;">Highest spend</div><div style="font-size:16px;font-weight:500;color:var(--ink);">Apr · $5,620</div></div>
+        </div>
+      </section>
+
+      <!-- Spending -->
+      <section style="grid-column:span 4;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Spending</h2>
+          <span style="font-size:13px;color:var(--mute);">October</span>
+        </div>
+        <div style="display:grid;place-items:center;margin:20px 0;">
+          <div style="position:relative;width:150px;height:150px;">
+            <svg width="150" height="150" viewBox="0 0 150 150" style="transform:rotate(-90deg);">
+              <sc-for list="{{ donut }}" as="d" hint-placeholder-count="6">
+                <circle cx="75" cy="75" r="60" fill="none" stroke="{{ d.color }}" stroke-width="16" stroke-dasharray="{{ d.dash }}" stroke-dashoffset="{{ d.off }}"></circle>
+              </sc-for>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <span style="font-size:11px;color:var(--mute);">Total</span>
+              <span style="font-size:18px;font-weight:500;font-variant-numeric:tabular-nums;">$4,563.85</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <sc-for list="{{ donut }}" as="d" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+              <span style="width:8px;height:8px;border-radius:2px;background:{{ d.color }};"></span>
+              <span style="flex:1;">{{ d.name }}</span>
+              <span style="color:var(--mute);font-variant-numeric:tabular-nums;width:38px;text-align:right;">{{ d.pct }}</span>
+              <span style="font-variant-numeric:tabular-nums;width:76px;text-align:right;">{{ d.amt }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- Budget health -->
+      <section style="grid-column:span 5;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+          <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Budget health</h2>
+          <a href="#" onClick="{{ goBudget }}" style="font-size:13px;color:var(--mute);">Budget →</a>
+        </div>
+        <div style="font-size:13px;color:var(--mute);margin-bottom:18px;font-variant-numeric:tabular-nums;">$4,563.85 of $4,550 budgeted</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <sc-for list="{{ budget }}" as="b" hint-placeholder-count="6">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:7px;">
+                <span style="flex:1;font-weight:500;">{{ b.name }}</span>
+                <span style="font-variant-numeric:tabular-nums;color:var(--mute);">{{ b.spent }} / {{ b.limit }}</span>
+                <span style="display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;width:84px;font-size:12px;font-weight:500;color:{{ b.sColor }};font-variant-numeric:tabular-nums;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ b.sIcon }}"></path></svg>
+                  {{ b.label }}
+                </span>
+              </div>
+              <div style="height:5px;border-radius:999px;background:var(--track);overflow:hidden;">
+                <div style="height:100%;width:{{ b.w }};border-radius:999px;background:{{ b.bar }};"></div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- Recent transactions -->
+      <section style="grid-column:span 7;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px 28px 16px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+          <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Recent transactions</h2>
+          <a href="#" onClick="{{ goTxn }}" style="font-size:13px;color:var(--pri);font-weight:500;">View all →</a>
+        </div>
+        <div style="display:flex;flex-direction:column;">
+          <sc-for list="{{ txns }}" as="t" hint-placeholder-count="8">
+            <div style="display:grid;grid-template-columns:34px minmax(0,1fr) 120px 110px;align-items:center;gap:14px;padding:10px 0;border-top:1px solid var(--line);">
+              <div style="width:34px;height:34px;border-radius:9px;background:{{ t.iconBg }};color:{{ t.iconColor }};display:grid;place-items:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.icon }}"></path></svg>
+              </div>
+              <div style="min-width:0;">
+                <div style="font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ t.desc }}</div>
+                <div style="font-size:12px;color:var(--mute);">{{ t.date }} · {{ t.account }}</div>
+              </div>
+              <div><span style="display:inline-block;font-size:12px;padding:3px 9px;border-radius:999px;background:var(--raised);color:var(--mute);border:1px solid var(--line);">{{ t.cat }}</span></div>
+              <div style="text-align:right;font-size:14px;font-weight:500;font-variant-numeric:tabular-nums;color:{{ t.color }};">{{ t.amt }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+  </main>
+
+  <!-- AI slide-out -->
+  <div onClick="{{ closeAi }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);opacity:{{ scrimOpacity }};pointer-events:{{ scrimPE }};transition:opacity .3s;z-index:20;"></div>
+  <aside style="position:absolute;top:0;right:0;bottom:0;width:420px;transform:{{ panelX }};transition:transform .4s cubic-bezier(.4,0,.2,1);z-index:21;background:var(--card);border-left:1px solid var(--line);box-shadow:-20px 0 60px rgba(0,0,0,.12);">
+    <div style="position:sticky;top:0;height:100vh;max-height:100%;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:12px;padding:22px 24px;border-bottom:1px solid var(--line);">
+        <div style="width:32px;height:32px;border-radius:9px;background:var(--goldSoft);display:grid;place-items:center;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"></path></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:500;">Assistant</div>
+          <div style="font-size:12px;color:var(--mute);">Knows your transactions, budgets, goals and investments</div>
+        </div>
+        <button onClick="{{ closeAi }}" title="Close" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--mute);display:grid;place-items:center;cursor:pointer;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div style="flex:1;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:14px;">
+        <div style="font-family:'Playfair Display',serif;font-size:20px;line-height:1.4;">Hi Alex. What would you like to know about your money?</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <sc-for list="{{ prompts }}" as="q" hint-placeholder-count="4">
+            <button onClick="{{ q.ask }}" style="text-align:left;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;" style-hover="border-color:var(--gold);">{{ q.text }}</button>
+          </sc-for>
+        </div>
+        <sc-for list="{{ chat }}" as="c" hint-placeholder-count="0">
+          <div style="align-self:{{ c.align }};max-width:88%;padding:12px 14px;border-radius:14px;background:{{ c.bg }};color:{{ c.color }};font-size:14px;line-height:1.55;text-wrap:pretty;">{{ c.text }}</div>
+        </sc-for>
+      </div>
+      <div style="padding:16px 24px 20px;border-top:1px solid var(--line);">
+        <form onSubmit="{{ submit }}" style="display:flex;gap:8px;">
+          <input value="{{ draft }}" onChange="{{ setDraft }}" placeholder="Ask about your finances" style="flex:1;height:42px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;">
+          <button type="submit" title="Send" style="width:42px;height:42px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);display:grid;place-items:center;cursor:pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4zM22 2 11 13"></path></svg>
+          </button>
+        </form>
+        <div style="font-size:11px;color:var(--mute);margin-top:10px;text-align:center;">Insights are general information, not financial advice</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Add transaction modal -->
+  <sc-if value="{{ modalOpen }}">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:30;background:rgba(8,10,8,.45);"></div>
+    <div role="dialog" aria-label="Add transaction" onKeyDown="{{ modalKey }}" style="position:fixed;z-index:31;top:96px;left:50%;transform:translateX(-50%);width:540px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.28);overflow:hidden;">
+      <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+      <div style="display:flex;align-items:center;padding:22px 26px 0;">
+        <div style="flex:1;font-family:'Playfair Display',serif;font-size:22px;font-weight:500;">Add transaction</div>
+        <button onClick="{{ closeModal }}" title="Close (Esc)" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--mute);display:grid;place-items:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+      </div>
+      <div style="padding:20px 26px 0;display:flex;flex-direction:column;gap:18px;">
+        <div style="display:flex;padding:3px;border-radius:10px;background:var(--raised);border:1px solid var(--line);">
+          <sc-for list="{{ txTypes }}" as="tt" hint-placeholder-count="3">
+            <button onClick="{{ tt.pick }}" style="flex:1;height:32px;border:0;border-radius:8px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;background:{{ tt.bg }};color:{{ tt.color }};box-shadow:{{ tt.sh }};">{{ tt.label }}</button>
+          </sc-for>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:14px;background:var(--raised);border:1px solid {{ amtBorder }};">
+            <span style="font-family:'Playfair Display',serif;font-size:36px;color:var(--mute);">{{ amtSign }}$</span>
+            <input ref="{{ amountRef }}" value="{{ form.amount }}" onChange="{{ setAmount }}" inputmode="decimal" placeholder="0.00" aria-label="Amount" style="flex:1;min-width:0;border:0;background:transparent;outline:none;color:var(--ink);font-family:'Playfair Display',serif;font-size:44px;font-variant-numeric:tabular-nums lining-nums;">
+            <span style="font-size:12px;color:var(--mute);">AUD</span>
+          </div>
+          <sc-if value="{{ errAmount }}"><div style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:var(--neg);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 8v4M12 16h.01"></path></svg>{{ errAmount }}</div></sc-if>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);grid-column:span 2;">Description
+            <input value="{{ form.desc }}" onChange="{{ setDesc }}" placeholder="e.g. Woolworths Metro" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid {{ descBorder }};background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;">
+            <sc-if value="{{ errDesc }}"><span style="color:var(--neg);">{{ errDesc }}</span></sc-if>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Date
+            <input type="date" value="{{ form.date }}" onChange="{{ setDate }}" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;color-scheme:{{ theme }};">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Category
+            <select value="{{ form.cat }}" onChange="{{ setCat }}" style="height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;">
+              <sc-for list="{{ catOptions }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for>
+            </select>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Account
+            <select value="{{ form.account }}" onChange="{{ setAccount }}" style="height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;">
+              <sc-for list="{{ accountOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+            </select>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Notes (optional)
+            <input value="{{ form.notes }}" onChange="{{ setNotes }}" placeholder="Private, excluded from exports" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;">
+          </label>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:20px 26px;margin-top:22px;border-top:1px solid var(--line);background:var(--raised);">
+        <span style="flex:1;font-size:12px;color:var(--mute);">Enter to save · Esc to close</span>
+        <button onClick="{{ saveAnother }}" style="height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;">Save &amp; add another</button>
+        <button onClick="{{ saveTx }}" style="height:38px;padding:0 18px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Save</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- Toast -->
+  <div role="status" style="position:fixed;z-index:60;left:50%;bottom:28px;transform:translate(-50%,{{ toastY }});opacity:{{ toastOp }};transition:opacity .3s,transform .35s cubic-bezier(.3,1.3,.5,1);pointer-events:none;display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;background:var(--ink);color:var(--card);font-size:14px;box-shadow:0 12px 32px rgba(0,0,0,.25);">
+    <span style="width:20px;height:20px;border-radius:50%;background:var(--pri);color:var(--priInk);display:grid;place-items:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span>
+    {{ toastMsg }}
+  </div>
+
+  <sc-if value="{{ locked }}">
+    <div style="position:fixed;inset:0;z-index:80;"><dc-import name="Login" theme="{{ theme }}" mode="{{ lockMode }}" state="{{ loginState }}" on-unlock="{{ unlock }}" on-theme="{{ setTheme }}" hint-size="100%,100%"></dc-import></div>
+  </sc-if>
+  <sc-if value="{{ onboarding }}">
+    <div style="position:fixed;inset:0;z-index:80;"><dc-import name="Onboarding" theme="{{ theme }}" step="{{ onboardStep }}" on-finish="{{ closeOnboard }}" on-theme="{{ setTheme }}" hint-size="100%,100%"></dc-import></div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light' | 'dark'&quot;}}">
+const IC = {
+  dash: "M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z",
+  txn: "M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4",
+  budget: "M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z",
+  income: "M2 6h20v12H2zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 12h.01M18 12h.01",
+  proj: "M22 7 13.5 15.5 8.5 10.5 2 17M16 7h6v6",
+  goals: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+  invest: "M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2l8 5H4z",
+  fire: "M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z",
+  ai: "M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z",
+  settings: "M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6",
+  sun: "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41",
+  moon: "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z",
+  up: "M7 17 17 7M7 7h10v10",
+  check: "M20 6 9 17l-5-5",
+  alert: "M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z",
+  minus: "M5 12h14",
+  shield: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
+  plane: "M2 16l20-8-6 12-3-5zM13 15l9-7",
+  car: "M5 17H3v-5l2.5-5h11L19 12h2v5h-2M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM9 17h6M5 12h14",
+  cart: "M8 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM19 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM2 2h3l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6",
+  fuel: "M3 22h12M4 9h10M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0V9.83a2 2 0 0 0-.59-1.42L18 5",
+  coffee: "M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 2v2M10 2v2M14 2v2",
+  brief: "M2 7h20v14H2zM16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2",
+  tv: "M2 7h20v15H2zM17 2l-5 5-5-5",
+  bag: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0",
+  phone: "M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM12 18h.01"
+};
+const THEMES = {
+  light: { '--bg':'#F7F8F5','--card':'#FFFFFF','--side':'#FFFFFF','--raised':'#F4F5F1','--line':'rgba(17,21,17,0.08)','--ink':'#111511','--mute':'#5F6B63','--pri':'#0B6E4F','--priSoft':'#E8F3EE','--priInk':'#FFFFFF','--gold':'#C9A227','--goldInk':'#86680E','--goldSoft':'rgba(201,162,39,0.11)','--neg':'#B04A41','--negSoft':'#F8ECEA','--track':'#ECEEEA','--sh':'0 1px 2px rgba(17,21,17,0.04), 0 6px 20px rgba(17,21,17,0.04)','--shH':'0 2px 4px rgba(17,21,17,0.05), 0 16px 36px rgba(17,21,17,0.08)' },
+  dark: { '--bg':'#0A0A0A','--card':'#141414','--side':'#0A0A0A','--raised':'#1C1C1C','--line':'rgba(255,255,255,0.08)','--ink':'#F5F5F0','--mute':'#9CA39E','--pri':'#10B981','--priSoft':'rgba(16,185,129,0.12)','--priInk':'#04140D','--gold':'#D4AF37','--goldInk':'#D4AF37','--goldSoft':'rgba(212,175,55,0.11)','--neg':'#E0796D','--negSoft':'rgba(224,121,109,0.12)','--track':'#242424','--sh':'none','--shH':'0 0 0 1px rgba(255,255,255,0.06), 0 16px 40px rgba(0,0,0,0.6)' }
+};
+const DONUT_COLORS = { light:['#0B6E4F','#C9A227','#4C9F80','#9CCBB5','#E4D18F','#D6DBD4'], dark:['#10B981','#D4AF37','#0B7A57','#7DDCB8','#8E7629','#3A3A3A'] };
+const fmt = (n, d=0) => n.toLocaleString('en-AU', { minimumFractionDigits:d, maximumFractionDigits:d });
+const money = (n, d=0) => '$' + fmt(n, d);
+
+const NW = [155000,158900,162100,166800,170400,174200,179500,184300,189600,195100,203930,208750];
+const MONTHS = ['Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+const YEARS = [2025,2025,2026,2026,2026,2026,2026,2026,2026,2026,2026,2026];
+const FULL = ['November','December','January','February','March','April','May','June','July','August','September','October'];
+const INC = [9840,10120,9610,9790,9930,9705,10040,9880,9655,9970,9815,9912.4];
+const EXP = [4380,5060,4290,4410,4520,5620,4350,4470,5180,4440,4610,4563.85];
+
+function smooth(pts) {
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i-1] || pts[i], p1 = pts[i], p2 = pts[i+1], p3 = pts[i+2] || p2;
+    const c1 = [p1[0] + (p2[0]-p0[0])/6, p1[1] + (p2[1]-p0[1])/6];
+    const c2 = [p2[0] - (p3[0]-p1[0])/6, p2[1] - (p3[1]-p1[1])/6];
+    d += ` C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0]},${p2[1].toFixed(1)}`;
+  }
+  return d;
+}
+
+const ANSWERS = {
+  "How am I tracking for my house deposit?": "You've saved $68,400 of $120,000 (57%). You're putting in about $2,500 a month against the $2,060 needed, so you're on course to finish around Aug 2028, roughly 4 months ahead of your Dec 2028 target.",
+  "Where did I overspend this month?": "Groceries is the only category over budget: $725.85 against a $650 limit (+$75.85, mostly two larger Coles shops). Shopping is right at its $180 limit and Transport is at 96%.",
+  "What's my FIRE number if I cut dining out by half?": "Halving dining out saves about $2,280 a year. Annual expenses drop to $51,720, which lowers your FIRE number from $1,350,000 to $1,293,000 and brings your projected FIRE age from 47 to about 46.",
+  "Summarise my finances this quarter": "Aug–Oct: income $29,697, expenses $13,614, saved $16,083 (54%). Net worth rose $19,150 to $208,750. Groceries ran over budget in October; every other category stayed within its limit."
+};
+
+class Component extends DCLogic {
+  state = { theme: null, p: 0, hover: -1, hoverM: -1, cf: 'lines', collapsed: false, aiOpen: false, chat: [], draft: '', page: 0, modal: false, form: null, errs: {}, toastMsg: '', toastOn: false, lock: null, sync: 'synced', onboard: false, searchTick: 0, settingsTab: null };
+  amountRef = React.createRef();
+  blankForm(type) { return { type: type || 'Expense', amount: '', date: '2026-10-30', desc: '', cat: type === 'Income' ? "Business Owner's Draws" : type === 'Transfer' ? 'Transfer' : 'Groceries', account: 'Everyday', notes: '' }; }
+  openModal = () => { this.setState({ modal: true, form: this.blankForm(), errs: {} }); setTimeout(() => this.amountRef.current && this.amountRef.current.focus(), 60); };
+  toast = msg => { clearTimeout(this.tt); this.setState({ toastMsg: msg, toastOn: true }); this.tt = setTimeout(() => this.setState({ toastOn: false }), 2800); };
+  save(another) {
+    const f = this.state.form, errs = {};
+    const amt = parseFloat(String(f.amount).replace(/[,$]/g, ''));
+    if (!f.amount) errs.amount = 'Enter an amount'; else if (!(amt > 0)) errs.amount = 'Amount must be a positive number';
+    if (!f.desc.trim()) errs.desc = 'Add a short description';
+    if (Object.keys(errs).length) { this.setState({ errs }); return; }
+    const sign = f.type === 'Income' ? '+' : f.type === 'Expense' ? '−' : '';
+    this.toast(`Saved ${sign}${money(amt, 2)} · ${f.cat}`);
+    if (another) { this.setState({ form: { ...this.blankForm(f.type), date: f.date, account: f.account, cat: f.cat }, errs: {} }); setTimeout(() => this.amountRef.current && this.amountRef.current.focus(), 30); }
+    else this.setState({ modal: false });
+  }
+
+  componentDidMount() {
+    let t = this.props.theme;
+    if (!t) { try { t = localStorage.getItem('ledger-theme'); } catch (e) {} }
+    this.setState({ theme: t || 'light', page: Number(this.props.page ?? 0) || 0, modal: !!this.props.modal, form: this.blankForm(), errs: this.props.modalErrors ? { amount: 'Enter an amount', desc: 'Add a short description' } : {}, aiOpen: !!this.props.ai, lock: this.props.lock || null, sync: this.props.sync || 'synced', onboard: !!this.props.onboarding, settingsTab: this.props.settingsTab || null });
+    if (this.props.ai) this.setState({ chat: [{ u: true, text: 'How am I tracking for my house deposit?' }, { u: false, text: ANSWERS['How am I tracking for my house deposit?'] }] });
+    const start = performance.now(), dur = 1400;
+    const tick = now => {
+      const x = Math.min(1, (now - start) / dur);
+      this.setState({ p: 1 - Math.pow(1 - x, 3) });
+      if (x < 1) this.raf = requestAnimationFrame(tick);
+    };
+    this.raf = requestAnimationFrame(tick);
+    if (!this.props.theme) {
+      this.onKey = e => {
+        const tag = (e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea') return;
+        if (this.state.lock || this.state.onboard) return;
+        if (e.key === 'Escape') { this.setState({ aiOpen: false, modal: false }); return; }
+        if (tag === 'select' || this.state.modal || e.metaKey || e.ctrlKey) return;
+        if (e.key === 'k' || e.key === 'K') this.setState(s => ({ aiOpen: !s.aiOpen }));
+        if (e.key === 'n' || e.key === 'N') { e.preventDefault(); this.openModal(); }
+        if (e.key === '/') { e.preventDefault(); this.setState(s => ({ page: 1, searchTick: s.searchTick + 1 })); }
+      };
+      window.addEventListener('keydown', this.onKey);
+    }
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); if (this.onKey) window.removeEventListener('keydown', this.onKey); }
+
+  async ask(q) {
+    if (this.state.aiBusy) return;
+    const chat = [...this.state.chat, { u: true, text: q }];
+    this.setState({ aiOpen: true, aiBusy: true, draft: '', chat: [...chat, { u: false, text: 'Thinking…', pending: true }] });
+    const r = await window.ledgerAsk(chat);
+    this.setState({ aiBusy: false, chat: [...chat, { u: false, text: r.text, error: r.error }] });
+  }
+
+  renderVals() {
+    const theme = this.state.theme || this.props.theme || 'light';
+    const dark = theme === 'dark';
+    const p = this.state.p;
+    const expanded = !this.state.collapsed;
+
+    const navDefs = [['Dashboard','dash'],['Transactions','txn'],['Budget','budget'],['Income','income'],['Projections','proj'],['Goals','goals'],['Investments & Net Worth','invest'],['FIRE Calculator','fire'],['AI Assistant','ai'],['Settings','settings']];
+    const page = Number(this.state.page) || 0;
+    const go = (i, tab) => e => { if (e && e.preventDefault) e.preventDefault(); this.setState({ page: i, aiOpen: false, settingsTab: tab || null }); };
+    const nav = navDefs.map(([label, ic], i) => ({
+      label, icon: IC[ic], showLabel: expanded, dot: i === page && expanded, go: go(i),
+      bg: i === page ? 'var(--priSoft)' : 'transparent',
+      color: i === page ? 'var(--pri)' : 'var(--mute)',
+      weight: i === page ? 500 : 400
+    }));
+
+    const min = 150000, max = 212000;
+    const pts = NW.map((v, i) => [Math.round(i * 240 / 11), 60 - (v - min) / (max - min) * 56 * p - (1 - p) * 0]);
+    const line = smooth(pts);
+
+    const C = 276.46;
+    const flow = MONTHS.map((m, i) => ({
+      m, full: `${FULL[i]} ${YEARS[i]}`,
+      incH: (INC[i] / 12000 * 100 * p).toFixed(2) + '%',
+      expH: (EXP[i] / 12000 * 100 * p).toFixed(2) + '%',
+      inc: money(INC[i], 2), exp: money(EXP[i], 2), sav: money(INC[i] - EXP[i], 2),
+      left: (i * 100 / 12).toFixed(4) + '%',
+      incY: (INC[i] / 12000 * 100 * p).toFixed(2) + '%', expY: (EXP[i] / 12000 * 100 * p).toFixed(2) + '%',
+      guideOp: this.state.hoverM === i ? 0.35 : 0, dotScale: this.state.hoverM === i ? 1.35 : (this.state.hoverM === -1 ? 1 : 0.8),
+      tipOp: this.state.hoverM === i ? 1 : 0, tipY: this.state.hoverM === i ? '0' : '6px', tipYn: this.state.hoverM === i ? '0' : '-6px',
+      mColor: this.state.hoverM === i ? 'var(--ink)' : 'var(--mute)', mWeight: this.state.hoverM === i ? 600 : 400,
+      colEnter: () => this.setState({ hoverM: i }),
+      ...(() => {
+        const h = this.state.hover, any = h !== -1;
+        const inc = h === i * 2, exp = h === i * 2 + 1;
+        return {
+          incOp: !any || inc ? 1 : 0.3, expOp: !any ? 0.75 : exp ? 1 : 0.25,
+          incScale: inc ? 'scaleX(1.25)' : 'scaleX(1)', expScale: exp ? 'scaleX(1.25)' : 'scaleX(1)',
+          incTipOp: inc ? 1 : 0, incTipY: inc ? '0' : '6px',
+          expTipOp: exp ? 1 : 0, expTipY: exp ? '0' : '6px',
+          incEnter: () => this.setState({ hover: i * 2 }),
+          expEnter: () => this.setState({ hover: i * 2 + 1 })
+        };
+      })()
+    }));
+
+    const cats = [['Rent',2400],['Groceries',725.85],['Dining Out',342],['Transport',212],['Utilities',206],['Other',678]];
+    const total = 4563.85, R = 2 * Math.PI * 60;
+    let acc = 0;
+    const donut = cats.map(([name, v], i) => {
+      const len = v / total * R * p;
+      const gap = 2;
+      const seg = { name, color: DONUT_COLORS[theme][i], amt: money(v, 2), pct: Math.round(v / total * 100) + '%',
+        dash: `${Math.max(0, len - gap).toFixed(2)} ${R.toFixed(2)}`, off: (-acc).toFixed(2) };
+      acc += len;
+      return seg;
+    });
+
+    const bud = [['Groceries',725.85,650],['Shopping',180,180],['Transport',212,220],['Dining Out',342,380],['Utilities & Internet',206,210],['Entertainment',108,120]];
+    const budget = bud.map(([name, s, l]) => {
+      const r = s / l;
+      const over = r > 1, near = !over && r >= 0.9;
+      return { name, spent: money(s, s % 1 ? 2 : 0), limit: money(l),
+        w: Math.min(100, r * 100 * p).toFixed(1) + '%',
+        bar: over ? 'var(--neg)' : near ? 'var(--gold)' : 'var(--pri)',
+        sColor: over ? 'var(--neg)' : near ? 'var(--goldInk)' : 'var(--pri)',
+        sIcon: over ? IC.alert : near ? IC.minus : IC.check,
+        label: over ? `Over ${Math.round(r*100)}%` : near ? `Near ${Math.round(r*100)}%` : `${Math.round(r*100)}%` };
+    });
+
+    const goals = [
+      { name:'Emergency Fund', icon:IC.shield, date:'Completed Aug 2026', saved:'$25,000', target:'$25,000', pctN:100, pct:'100%', note:'Fully funded', status:'Completed', sIcon:IC.check, sBg:'var(--goldSoft)', sColor:'var(--goldInk)', bar:'var(--gold)', iconBg:'var(--goldSoft)', iconColor:'var(--goldInk)' },
+      { name:'Europe Trip', icon:IC.plane, date:'Target Jun 2027', saved:'$4,850', target:'$12,000', pctN:40.4, pct:'40%', note:'Needs +$100/mo', status:'Behind', sIcon:IC.alert, sBg:'var(--negSoft)', sColor:'var(--neg)', bar:'var(--pri)', iconBg:'var(--raised)', iconColor:'var(--ink)' },
+      { name:'Car Upgrade', icon:IC.car, date:'Target Mar 2028', saved:'$7,200', target:'$30,000', pctN:24, pct:'24%', note:'$1,340/mo', status:'On track', sIcon:IC.check, sBg:'var(--priSoft)', sColor:'var(--pri)', bar:'var(--pri)', iconBg:'var(--raised)', iconColor:'var(--ink)' }
+    ].map(g => ({ ...g, w: (g.pctN * p).toFixed(1) + '%' }));
+
+    const tx = [
+      ['30 Oct','Woolworths Metro','Groceries','Everyday',-86.40,IC.cart],
+      ['29 Oct','Ampol Surry Hills','Transport','Everyday',-72.15,IC.fuel],
+      ['28 Oct','Single O Café','Dining Out','Everyday',-18.50,IC.coffee],
+      ['28 Oct','Northwind Studio — consulting','Side Income','Business Draws',640.00,IC.brief],
+      ['27 Oct','Netflix','Subscriptions','Everyday',-18.99,IC.tv],
+      ['25 Oct','Bunnings Warehouse','Shopping','Everyday',-54.80,IC.bag],
+      ['24 Oct','Telstra','Phone','Everyday',-65.00,IC.phone],
+      ['23 Oct','Coles Broadway','Groceries','Everyday',-112.35,IC.cart]
+    ];
+    const txns = tx.map(([date, desc, cat, account, v, icon]) => ({
+      date, desc, cat, account, icon,
+      amt: (v > 0 ? '+' : '−') + money(Math.abs(v), 2),
+      color: v > 0 ? 'var(--pri)' : 'var(--ink)',
+      iconBg: v > 0 ? 'var(--priSoft)' : 'var(--raised)',
+      iconColor: v > 0 ? 'var(--pri)' : 'var(--mute)'
+    }));
+
+    const open = this.state.aiOpen;
+    const chat = this.state.chat.map(c => ({ text: c.text, align: c.u ? 'flex-end' : 'flex-start', bg: c.u ? 'var(--pri)' : 'var(--raised)', color: c.u ? 'var(--priInk)' : 'var(--ink)' }));
+
+    return {
+      rootStyle: { ...THEMES[theme], position:'relative', display:'flex', minHeight:'100vh', overflowX:'clip', background:'var(--bg)', color:'var(--ink)', fontFamily:"'Geist', system-ui, sans-serif", transition:'background-color .4s ease, color .4s ease' },
+      pageTitle: navDefs[page][0], pageIcon: IC[navDefs[page][1]],
+      isDash: page === 0, pg: { p1: page === 1, p2: page === 2, p3: page === 3, p4: page === 4, p5: page === 5, p6: page === 6, p7: page === 7, p8: page === 8, p9: page === 9 },
+      goDash: go(0), goTxn: go(1), goBudget: go(2), goProj: go(4), goInvest: go(6), goSheet: go(9, 'data'), goExport: go(9, 'export'),
+      theme, keys: !this.props.theme, emptyTxns: !!this.props.emptyTxns, goalDetail: !!this.props.goalDetail, settingsTab: this.state.settingsTab || this.props.settingsTab || '',
+      sync: this.state.sync, setSync: s => this.setState({ sync: s }),
+      setTheme: t => { try { if (!this.props.theme) localStorage.setItem('ledger-theme', t); } catch (e) {} this.setState({ theme: t }); },
+      syncText: { synced: 'Synced 2 min ago', syncing: 'Syncing…', error: 'Sheet disconnected' }[this.state.sync],
+      syncDot: this.state.sync === 'error' ? 'var(--neg)' : this.state.sync === 'syncing' ? 'var(--gold)' : 'var(--pri)',
+      syncRing: this.state.sync === 'error' ? 'var(--negSoft)' : this.state.sync === 'syncing' ? 'var(--goldSoft)' : 'var(--priSoft)',
+      syncColor: this.state.sync === 'error' ? 'var(--neg)' : 'var(--mute)',
+      syncBorder: this.state.sync === 'error' ? 'var(--neg)' : 'transparent', syncPulse: 1,
+      openModal: this.openModal, closeModal: () => this.setState({ modal: false }), modalOpen: this.state.modal,
+      form: this.state.form || this.blankForm(), amountRef: this.amountRef,
+      txTypes: ['Expense','Income','Transfer'].map(l => { const on = (this.state.form || {}).type === l; return { label: l, bg: on ? 'var(--card)' : 'transparent', color: on ? (l === 'Income' ? 'var(--pri)' : l === 'Expense' ? 'var(--neg)' : 'var(--ink)') : 'var(--mute)', sh: on ? '0 1px 3px rgba(0,0,0,.12)' : 'none', pick: () => this.setState(s => ({ form: { ...s.form, type: l, cat: this.blankForm(l).cat } })) }; }),
+      amtSign: { Expense: '−', Income: '+', Transfer: '' }[(this.state.form || {}).type || 'Expense'],
+      catOptions: { Expense: ['Groceries','Dining Out','Transport','Rent','Utilities & Internet','Phone','Subscriptions','Health & Fitness','Shopping','Entertainment','Insurance'], Income: ["Business Owner's Draws",'Side Income','Interest & Dividends','Other Income'], Transfer: ['Transfer','Savings contribution','Investment contribution'] }[(this.state.form || {}).type || 'Expense'],
+      accountOptions: ['Everyday','Savings','Business Draws','Investment'],
+      setAmount: e => this.setState(s => ({ form: { ...s.form, amount: e.target.value }, errs: { ...s.errs, amount: null } })),
+      setDesc: e => this.setState(s => ({ form: { ...s.form, desc: e.target.value }, errs: { ...s.errs, desc: null } })),
+      setDate: e => this.setState(s => ({ form: { ...s.form, date: e.target.value } })),
+      setCat: e => this.setState(s => ({ form: { ...s.form, cat: e.target.value } })),
+      setAccount: e => this.setState(s => ({ form: { ...s.form, account: e.target.value } })),
+      setNotes: e => this.setState(s => ({ form: { ...s.form, notes: e.target.value } })),
+      errAmount: this.state.errs.amount || '', errDesc: this.state.errs.desc || '',
+      amtBorder: this.state.errs.amount ? 'var(--neg)' : 'var(--line)', descBorder: this.state.errs.desc ? 'var(--neg)' : 'var(--line)',
+      saveTx: () => this.save(false), saveAnother: () => this.save(true),
+      modalKey: e => { if (e.key === 'Escape') this.setState({ modal: false }); if (e.key === 'Enter' && (e.target.tagName || '').toLowerCase() === 'input') { e.preventDefault(); this.save(false); } },
+      toast: this.toast, toastMsg: this.state.toastMsg, toastOp: this.state.toastOn ? 1 : 0, toastY: this.state.toastOn ? '0' : '12px',
+      locked: !!this.state.lock, lockMode: this.state.lock || 'login', loginState: this.props.loginState || '',
+      unlock: () => this.setState({ lock: null }), doLock: () => this.setState({ lock: 'locked' }), doLogout: () => this.setState({ lock: 'login' }),
+      onboarding: this.state.onboard, onboardStep: this.props.onboardStep || 0,
+      openOnboard: () => this.setState({ onboard: true }), closeOnboard: () => this.setState({ onboard: false, page: 0 }),
+      searchTick: this.state.searchTick,
+      cfLines: this.state.cf === 'lines', cfBars: this.state.cf === 'bars',
+      cfSetLines: () => this.setState({ cf: 'lines' }), cfSetBars: () => this.setState({ cf: 'bars' }),
+      cfLinesBg: this.state.cf === 'lines' ? 'var(--card)' : 'transparent', cfLinesColor: this.state.cf === 'lines' ? 'var(--ink)' : 'var(--mute)',
+      cfBarsBg: this.state.cf === 'bars' ? 'var(--card)' : 'transparent', cfBarsColor: this.state.cf === 'bars' ? 'var(--ink)' : 'var(--mute)',
+      leaveLine: () => this.setState({ hoverM: -1 }),
+      ...(() => {
+        const ip = INC.map((v, i) => [(i + 0.5) * 100, 208 - v / 12000 * 208 * p]);
+        const ep = EXP.map((v, i) => [(i + 0.5) * 100, 208 - v / 12000 * 208 * p]);
+        const il = smooth(ip), el = smooth(ep);
+        return { incLine: il, expLine: el, incArea: il + ' L1150,208 L50,208 Z', expArea: el + ' L1150,208 L50,208 Z' };
+      })(),
+      expanded, sideW: expanded ? '248px' : '76px', nav,
+      toggleSide: () => this.setState(s => ({ collapsed: !s.collapsed })),
+      toggleTheme: () => { const t = dark ? 'light' : 'dark'; try { if (!this.props.theme) localStorage.setItem('ledger-theme', t); } catch (e) {} this.setState({ theme: t }); },
+      knobLeft: dark ? '33px' : '3px', themeIcon: dark ? IC.moon : IC.sun,
+      nwText: money(Math.round(208750 * p)),
+      sparkLine: line, sparkArea: line + ' L240,64 L0,64 Z',
+      savText: Math.round(54 * p) + '%', savOffset: (C * (1 - 0.54 * p)).toFixed(2),
+      fireText: (10 * p).toFixed(1) + '%', fireOffset: (C * (1 - 0.10 * p)).toFixed(2),
+      expW: (46 * p).toFixed(1) + '%',
+      houseText: money(Math.round(68400 * p)), houseW: (57 * p).toFixed(1) + '%',
+      goals, flow, leaveFlow: () => this.setState({ hover: -1 }), donut, budget, txns,
+      openAi: () => this.setState({ aiOpen: true }), closeAi: () => this.setState({ aiOpen: false }),
+      panelX: open ? 'translateX(0)' : 'translateX(105%)',
+      scrimOpacity: open ? 1 : 0, scrimPE: open ? 'auto' : 'none',
+      prompts: Object.keys(ANSWERS).map(text => ({ text, ask: () => this.ask(text) })),
+      chat, draft: this.state.draft,
+      setDraft: e => this.setState({ draft: e.target.value }),
+      submit: e => { e.preventDefault(); const q = this.state.draft.trim(); if (q) this.ask(q); }
+    };
+  }
+}
+</script>
+</body>
+</html>

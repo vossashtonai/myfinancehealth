@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./ai-client.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="padding:28px 32px 32px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px;">
+  <aside style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:18px;display:flex;flex-direction:column;gap:6px;height:720px;box-sizing:border-box;">
+    <button onClick="{{ newChat }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;margin-bottom:10px;" style-hover="border-color:var(--gold);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New conversation
+    </button>
+    <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);padding:6px 8px;">Recent</div>
+    <sc-for list="{{ history }}" as="h" hint-placeholder-count="5">
+      <div style="padding:10px 10px;border-radius:9px;background:{{ h.bg }};cursor:pointer;" style-hover="background:var(--raised);">
+        <div style="font-size:13px;font-weight:{{ h.weight }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ h.t }}</div>
+        <div style="font-size:11px;color:var(--mute);margin-top:2px;">{{ h.d }}</div>
+      </div>
+    </sc-for>
+    <div style="flex:1;"></div>
+    <div style="font-size:11px;color:var(--mute);line-height:1.5;padding:8px;">The assistant reads your transactions, budgets, goals and investments from your connected sheet.</div>
+  </aside>
+
+  <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);display:flex;flex-direction:column;height:720px;overflow:hidden;">
+    <div ref="{{ scrollRef }}" style="flex:1;overflow:auto;padding:32px 40px;display:flex;flex-direction:column;gap:22px;">
+      <sc-if value="{{ isEmpty }}">
+        <div style="margin:auto;text-align:center;max-width:520px;display:flex;flex-direction:column;align-items:center;gap:12px;">
+          <div style="width:52px;height:52px;border-radius:14px;background:var(--goldSoft);display:grid;place-items:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"></path></svg></div>
+          <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:500;">What would you like to know?</div>
+          <div style="font-size:14px;color:var(--mute);">Ask about spending, goals, investments or your FIRE plan.</div>
+        </div>
+      </sc-if>
+      <sc-for list="{{ msgs }}" as="c" hint-placeholder-count="2">
+        <sc-if value="{{ c.u }}">
+          <div style="align-self:flex-end;max-width:70%;padding:12px 16px;border-radius:16px 16px 4px 16px;background:var(--pri);color:var(--priInk);font-size:14px;line-height:1.55;">{{ c.text }}</div>
+        </sc-if>
+        <sc-if value="{{ c.bot }}">
+          <div style="display:flex;gap:14px;max-width:84%;">
+            <div style="flex:none;width:32px;height:32px;border-radius:9px;background:var(--goldSoft);display:grid;place-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"></path></svg></div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;">
+              <div style="font-size:15px;line-height:1.65;text-wrap:pretty;">{{ c.text }}</div>
+              <sc-if value="{{ c.hasStats }}">
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+                  <sc-for list="{{ c.stats }}" as="s" hint-placeholder-count="3">
+                    <div style="padding:14px 16px;border-radius:12px;background:var(--raised);border:1px solid var(--line);">
+                      <div style="font-size:12px;color:var(--mute);">{{ s.l }}</div>
+                      <div style="font-size:20px;font-weight:500;margin-top:4px;font-variant-numeric:tabular-nums;color:{{ s.color }};">{{ s.v }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ c.hasBars }}">
+                <div style="padding:16px 18px;border-radius:12px;background:var(--raised);border:1px solid var(--line);display:flex;flex-direction:column;gap:12px;">
+                  <sc-for list="{{ c.bars }}" as="b" hint-placeholder-count="3">
+                    <div>
+                      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;font-variant-numeric:tabular-nums;"><span>{{ b.l }}</span><span style="color:{{ b.color }};font-weight:500;">{{ b.v }}</span></div>
+                      <div style="height:6px;border-radius:999px;background:var(--track);overflow:hidden;"><div style="height:100%;width:{{ b.w }};background:{{ b.color }};border-radius:999px;"></div></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+      </sc-for>
+      <sc-if value="{{ thinking }}">
+        <div style="display:flex;gap:6px;padding-left:46px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.4;"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.7;"></span><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);"></span>
+        </div>
+      </sc-if>
+    </div>
+    <div style="padding:16px 40px 20px;border-top:1px solid var(--line);">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <sc-for list="{{ prompts }}" as="q" hint-placeholder-count="4">
+          <button onClick="{{ q.ask }}" style="padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;" style-hover="border-color:var(--gold);">{{ q.t }}</button>
+        </sc-for>
+      </div>
+      <form onSubmit="{{ submit }}" style="display:flex;gap:10px;">
+        <input value="{{ draft }}" onChange="{{ setDraft }}" placeholder="Ask about your finances" style="flex:1;height:46px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:15px;outline:none;">
+        <button type="submit" title="Send" style="width:46px;height:46px;border-radius:12px;border:0;background:var(--pri);color:var(--priInk);display:grid;place-items:center;cursor:pointer;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4zM22 2 11 13"></path></svg></button>
+      </form>
+      <div style="font-size:11px;color:var(--mute);margin-top:10px;text-align:center;">Insights are general information, not financial advice</div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const A = {
+  "How am I tracking for my house deposit?": { text: "You're ahead. At $2,500 a month against the $2,060 needed, you'll reach $120,000 around Aug 2028, about 4 months before your Dec 2028 target. You passed the 50% milestone in August.", stats: [['Saved', '$68,400', 'ink'], ['To go', '$51,600', 'ink'], ['Ahead by', '4 months', 'gold']] },
+  "Where did I overspend this month?": { text: "Groceries is the only category over budget in October, mostly from two larger Coles and Woolworths shops in the second week. Shopping is right at its limit and Transport is close.", bars: [['Groceries · $725.85 of $650', '112%', 100, 'neg'], ['Shopping · $180 of $180', '100%', 100, 'gold'], ['Transport · $212 of $220', '96%', 96, 'gold'], ['Dining Out · $342 of $380', '90%', 90, 'pri']] },
+  "What's my FIRE number if I cut dining out by half?": { text: "Halving dining out saves about $2,280 a year. Annual expenses fall to $51,720, which lowers your FIRE number and brings your projected FIRE age forward by about a year.", stats: [['New FIRE number', '$1,293,000', 'gold'], ['Change', '−$57,000', 'pri'], ['FIRE age', '47 → 46', 'ink']] },
+  "Summarise my finances this quarter": { text: "Aug–Oct was steady. Income held at about $9,900 a month, you saved 54% of it, and net worth rose $19,150. Groceries ran over in October; every other category stayed within budget.", stats: [['Income', '$29,697', 'ink'], ['Expenses', '$13,614', 'ink'], ['Saved', '$16,083', 'pri']] }
+};
+const SEED = [{ u: true, text: "Where did I overspend this month?" }, { u: false, ...A["Where did I overspend this month?"] }];
+
+class Component extends DCLogic {
+  state = { msgs: SEED, draft: '', thinking: false };
+  scrollRef = React.createRef();
+  componentDidUpdate() { const el = this.scrollRef.current; if (el) el.scrollTop = el.scrollHeight; }
+  async ask(q) {
+    if (this.state.thinking) return;
+    const msgs = [...this.state.msgs, { u: true, text: q }];
+    this.setState({ msgs, draft: '', thinking: true });
+    const r = await window.ledgerAsk(msgs);
+    this.setState(s => ({ thinking: false, msgs: [...s.msgs, { u: false, text: r.text, error: r.error,
+      stats: (r.stats || []).map(x => [x.label, x.value, x.tone]),
+      bars: (r.bars || []).map(b => [b.label, b.value, b.percent, b.tone]) }] }));
+  }
+  renderVals() {
+    const col = { ink: 'var(--ink)', gold: 'var(--goldInk)', pri: 'var(--pri)', neg: 'var(--neg)' };
+    const msgs = this.state.msgs.map(c => ({
+      u: c.u, bot: !c.u, text: c.text,
+      hasStats: !!(c.stats && c.stats.length), stats: (c.stats || []).map(([l, v, k]) => ({ l, v, color: col[k] || col.ink })),
+      hasBars: !!(c.bars && c.bars.length), bars: (c.bars || []).map(([l, v, w, k]) => ({ l, v, w: w + '%', color: col[k] }))
+    }));
+    return {
+      msgs, isEmpty: msgs.length === 0, thinking: this.state.thinking, scrollRef: this.scrollRef,
+      prompts: Object.keys(A).map(t => ({ t, ask: () => this.ask(t) })),
+      history: [['Where did I overspend this month?', 'Today'], ['Can I afford a $3k holiday in March?', 'Yesterday'], ['Super contributions before 30 June', '12 Oct'], ['Compare VDHG and IVV performance', '3 Oct'], ['Q3 summary', '1 Oct']].map(([t, d], i) => ({ t, d, bg: i === 0 ? 'var(--priSoft)' : 'transparent', weight: i === 0 ? 500 : 400 })),
+      newChat: () => this.setState({ msgs: [] }),
+      draft: this.state.draft, setDraft: e => this.setState({ draft: e.target.value }),
+      submit: e => { e.preventDefault(); const q = this.state.draft.trim(); if (q) this.ask(q); }
+    };
+  }
+}
+</script>
+</body>
+</html>

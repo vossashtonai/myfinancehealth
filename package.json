@@ -1,0 +1,19 @@
+{
+  "name": "myfinancehealth",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ledger personal finance dashboard (from Claude Design) with a live Claude-powered AI assistant",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

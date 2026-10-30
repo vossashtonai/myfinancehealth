@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes ledgerShakeA{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+@keyframes ledgerShakeB{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+</style>
+</helmet>
+<div style="{{ rootStyle }}">
+  <button onClick="{{ toggleTheme }}" title="Toggle theme" style="position:absolute;top:24px;right:24px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--goldInk);display:grid;place-items:center;cursor:pointer;">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ themeIcon }}"></path></svg>
+  </button>
+  <form onSubmit="{{ submit }}" style="position:relative;width:420px;max-width:calc(100% - 40px);box-sizing:border-box;padding:44px 40px 36px;border-radius:20px;background:var(--card);border:1px solid var(--line);box-shadow:var(--sh);display:flex;flex-direction:column;align-items:center;overflow:hidden;animation:{{ shake }};">
+    <div style="position:absolute;top:0;left:40px;right:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:34px;height:34px;border-radius:9px;background:var(--pri);display:grid;place-items:center;"><div style="width:10px;height:10px;transform:rotate(45deg);background:var(--gold);"></div></div>
+      <div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:500;">Ledger</div>
+    </div>
+    <div style="width:56px;height:1px;background:var(--gold);margin:18px 0 28px;"></div>
+    <sc-if value="{{ isLocked }}">
+      <div style="position:relative;width:64px;height:64px;border-radius:50%;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;font-family:'Playfair Display',serif;font-size:26px;border:1px solid var(--gold);">A
+        <span style="position:absolute;right:-4px;bottom:-4px;width:26px;height:26px;border-radius:50%;background:var(--card);border:1px solid var(--gold);color:var(--goldInk);display:grid;place-items:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11h14v11H5zM7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:500;margin-top:16px;">Session locked</div>
+      <div style="font-size:14px;color:var(--mute);margin-top:6px;text-align:center;">Locked after 30 minutes of inactivity. Enter your password to continue, Alex.</div>
+    </sc-if>
+    <sc-if value="{{ isLogin }}">
+      <div style="width:52px;height:52px;border-radius:14px;background:var(--raised);border:1px solid var(--line);color:var(--ink);display:grid;place-items:center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11h14v11H5zM7 11V7a5 5 0 0 1 10 0v4"></path><circle cx="12" cy="16" r="1.6" fill="var(--gold)" stroke="var(--gold)"></circle></svg>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:500;margin-top:16px;">Welcome back</div>
+      <div style="font-size:14px;color:var(--mute);margin-top:6px;">Enter your password to unlock your finances.</div>
+    </sc-if>
+
+    <div style="width:100%;margin-top:28px;">
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Password
+        <div style="position:relative;">
+          <input ref="{{ pwRef }}" type="{{ pwType }}" value="{{ pw }}" onChange="{{ setPw }}" disabled="{{ cooling }}" autocomplete="current-password" placeholder="••••••••" style="width:100%;box-sizing:border-box;height:46px;padding:0 46px 0 14px;border-radius:12px;border:1px solid {{ pwBorder }};background:var(--raised);color:var(--ink);font:inherit;font-size:15px;outline:none;opacity:{{ inputOp }};">
+          <button type="button" onClick="{{ toggleShow }}" title="{{ showTitle }}" style="position:absolute;right:6px;top:6px;width:34px;height:34px;border:0;border-radius:8px;background:transparent;color:var(--mute);display:grid;place-items:center;cursor:pointer;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ eyeIcon }}"></path></svg>
+          </button>
+        </div>
+      </label>
+      <sc-if value="{{ hasErr }}">
+        <div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;color:var(--neg);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 8v4M12 16h.01"></path></svg>{{ errText }}
+        </div>
+      </sc-if>
+      <sc-if value="{{ isLogin }}">
+        <label style="display:flex;align-items:center;gap:10px;margin-top:16px;font-size:14px;cursor:pointer;">
+          <input type="checkbox" checked="{{ remember }}" onChange="{{ toggleRemember }}" style="width:16px;height:16px;accent-color:{{ accent }};margin:0;">
+          Remember me on this device <span style="color:var(--mute);font-size:12px;">· 30 days</span>
+        </label>
+      </sc-if>
+      <button type="submit" disabled="{{ cooling }}" style="width:100%;height:46px;margin-top:20px;border-radius:12px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:15px;font-weight:500;cursor:pointer;opacity:{{ inputOp }};">{{ btnText }}</button>
+      <sc-if value="{{ isLocked }}">
+        <button type="button" onClick="{{ switchUser }}" style="all:unset;display:block;margin:14px auto 0;font-size:13px;color:var(--mute);cursor:pointer;">Log out instead</button>
+      </sc-if>
+    </div>
+    <div style="margin-top:26px;font-size:12px;color:var(--mute);text-align:center;">Demo password: <span style="font-family:ui-monospace,monospace;color:var(--ink);">ledger</span></div>
+  </form>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;locked&quot;],&quot;default&quot;:&quot;login&quot;,&quot;tsType&quot;:&quot;'login' | 'locked'&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light' | 'dark'&quot;},&quot;state&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;error&quot;,&quot;cooldown&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const THEMES = {
+  light: { '--bg':'#F7F8F5','--card':'#FFFFFF','--raised':'#F4F5F1','--line':'rgba(17,21,17,0.08)','--ink':'#111511','--mute':'#5F6B63','--pri':'#0B6E4F','--priSoft':'#E8F3EE','--priInk':'#FFFFFF','--gold':'#C9A227','--goldInk':'#86680E','--goldSoft':'rgba(201,162,39,0.11)','--neg':'#B04A41','--negSoft':'#F8ECEA','--track':'#ECEEEA','--sh':'0 1px 2px rgba(17,21,17,0.04), 0 20px 60px rgba(17,21,17,0.08)' },
+  dark: { '--bg':'#0A0A0A','--card':'#141414','--raised':'#1C1C1C','--line':'rgba(255,255,255,0.08)','--ink':'#F5F5F0','--mute':'#9CA39E','--pri':'#10B981','--priSoft':'rgba(16,185,129,0.12)','--priInk':'#04140D','--gold':'#D4AF37','--goldInk':'#D4AF37','--goldSoft':'rgba(212,175,55,0.11)','--neg':'#E0796D','--negSoft':'rgba(224,121,109,0.12)','--track':'#242424','--sh':'none' }
+};
+const EYE = "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z";
+const EYE_OFF = "M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22M14.12 14.12a3 3 0 1 1-4.24-4.24";
+
+class Component extends DCLogic {
+  state = { theme: null, pw: '', show: false, remember: true, fails: 0, err: '', shakeN: 0, cool: 0, mode: null };
+  pwRef = React.createRef();
+  componentDidMount() {
+    const st = this.props.state;
+    if (st === 'error') this.setState({ pw: 'ledgr', fails: 1, err: 'Incorrect password', shakeN: 1 });
+    if (st === 'cooldown') this.startCool(5);
+    setTimeout(() => this.pwRef.current && this.pwRef.current.focus(), 80);
+  }
+  componentWillUnmount() { clearInterval(this.iv); }
+  startCool(fails) {
+    this.setState({ fails, cool: 60, err: 'Too many attempts, try again in 1 minute' });
+    clearInterval(this.iv);
+    this.iv = setInterval(() => this.setState(s => { const c = s.cool - 1; if (c <= 0) { clearInterval(this.iv); return { cool: 0, fails: 0, err: '' }; } return { cool: c, err: `Too many attempts, try again in ${c}s` }; }), 1000);
+  }
+  renderVals() {
+    const s = this.state, theme = s.theme || this.props.theme || 'light', dark = theme === 'dark';
+    const mode = s.mode || this.props.mode || 'login';
+    const cooling = s.cool > 0;
+    return {
+      rootStyle: { ...THEMES[theme], position: 'relative', minHeight: '100vh', height: '100%', display: 'grid', placeItems: 'center', background: 'var(--bg)', color: 'var(--ink)', fontFamily: "'Geist', system-ui, sans-serif", transition: 'background-color .4s, color .4s', padding: '40px 0', boxSizing: 'border-box' },
+      toggleTheme: () => { const t = dark ? 'light' : 'dark'; this.setState({ theme: t }); this.props.onTheme && this.props.onTheme(t); },
+      themeIcon: dark ? "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" : "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41",
+      isLocked: mode === 'locked', isLogin: mode !== 'locked',
+      pwRef: this.pwRef, pw: s.pw, setPw: e => this.setState({ pw: e.target.value, err: cooling ? s.err : '' }),
+      pwType: s.show ? 'text' : 'password', toggleShow: () => this.setState({ show: !s.show }), eyeIcon: s.show ? EYE_OFF : EYE, showTitle: s.show ? 'Hide password' : 'Show password',
+      pwBorder: s.err ? 'var(--neg)' : 'var(--line)', hasErr: !!s.err, errText: s.err,
+      shake: s.shakeN ? `${s.shakeN % 2 ? 'ledgerShakeA' : 'ledgerShakeB'} .45s ease` : 'none',
+      remember: s.remember, toggleRemember: () => this.setState({ remember: !s.remember }), accent: dark ? '#10B981' : '#0B6E4F',
+      cooling, inputOp: cooling ? 0.5 : 1, btnText: cooling ? `Try again in ${s.cool}s` : 'Unlock',
+      switchUser: () => this.setState({ mode: 'login', pw: '', err: '' }),
+      submit: e => {
+        e.preventDefault(); if (cooling) return;
+        if (s.pw === 'ledger') { this.setState({ pw: '', err: '', fails: 0 }); this.props.onUnlock && this.props.onUnlock(); return; }
+        const f = s.fails + 1;
+        if (f >= 5) { this.startCool(f); this.setState(st => ({ shakeN: st.shakeN + 1 })); return; }
+        this.setState(st => ({ fails: f, err: `Incorrect password · ${5 - f} attempt${5 - f === 1 ? '' : 's'} left`, shakeN: st.shakeN + 1 }));
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

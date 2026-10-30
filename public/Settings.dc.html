@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="padding:28px 32px 48px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:28px;align-items:start;">
+  <nav style="position:sticky;top:20px;display:flex;flex-direction:column;gap:2px;">
+    <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="9">
+      <button onClick="{{ t.pick }}" style="display:flex;align-items:center;gap:10px;height:38px;padding:0 12px;border:0;border-radius:9px;background:{{ t.bg }};color:{{ t.color }};font:inherit;font-size:14px;font-weight:{{ t.weight }};cursor:pointer;text-align:left;" style-hover="background:var(--raised);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.icon }}"></path></svg>{{ t.l }}
+      </button>
+    </sc-for>
+  </nav>
+
+  <div style="display:flex;flex-direction:column;gap:20px;min-width:0;">
+    <!-- Profile -->
+    <sc-if value="{{ is.profile }}" hint-placeholder-val="{{ true }}">
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <h2 style="margin:0 0 4px;font-family:'Playfair Display',serif;font-weight:500;font-size:22px;">Profile</h2>
+        <div style="font-size:13px;color:var(--mute);margin-bottom:24px;">Stored in the Settings tab of your sheet.</div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;font-family:'Playfair Display',serif;font-size:26px;border:1px solid var(--gold);">A</div>
+          <button style="height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;">Change avatar</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:640px;">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Name<input value="Alex" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Currency<select style="height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;"><option>AUD · Australian dollar</option><option>NZD · New Zealand dollar</option><option>USD · US dollar</option><option>GBP · British pound</option><option>EUR · Euro</option></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Financial year starts<select style="height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;"><option>1 July (Australia)</option><option>1 April</option><option>1 January</option></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Number format<select style="height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;"><option>$12,450.00</option><option>$12 450,00</option></select></label>
+        </div>
+        <button onClick="{{ saved }}" style="margin-top:24px;height:38px;padding:0 18px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Save changes</button>
+      </section>
+    </sc-if>
+
+    <!-- Data source -->
+    <sc-if value="{{ is.data }}">
+      <sc-if value="{{ syncOk }}">
+        <section style="position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;overflow:hidden;">
+          <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+          <div style="display:flex;align-items:flex-start;gap:16px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16v18H4zM4 9h16M4 15h16M10 9v12"></path></svg></div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:10px;"><h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:22px;">Google Sheet</h2>
+                <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:999px;background:{{ syncPillBg }};color:{{ syncPillColor }};"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;"></span>{{ syncPill }}</span></div>
+              <div style="font-size:14px;color:var(--mute);margin-top:4px;">Ledger · Alex · 7 tabs · last synced {{ lastSync }}</div>
+            </div>
+            <button onClick="{{ syncNow }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;opacity:{{ syncBtnOp }};">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate({{ spin }});transition:transform 1.4s linear;"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"></path></svg>{{ syncBtn }}
+            </button>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);margin-top:24px;">Sheet URL or ID
+            <div style="display:flex;gap:8px;"><input value="https://docs.google.com/spreadsheets/d/1Ab9xLedgerDemo7Qz/edit" style="flex:1;height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:13px;outline:none;font-family:ui-monospace,monospace;"><button onClick="{{ disconnect }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--neg);font:inherit;font-size:13px;cursor:pointer;">Disconnect</button></div>
+          </label>
+        </section>
+      </sc-if>
+      <sc-if value="{{ syncErr }}">
+        <section style="background:var(--card);border:1px solid var(--neg);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+          <div style="display:flex;align-items:flex-start;gap:16px;">
+            <div style="width:48px;height:48px;border-radius:12px;background:var(--negSoft);color:var(--neg);display:grid;place-items:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg></div>
+            <div style="flex:1;">
+              <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:22px;">Sheet disconnected</h2>
+              <div style="font-size:14px;color:var(--mute);margin-top:6px;line-height:1.55;max-width:560px;">We couldn't reach your Google Sheet. Access may have been revoked or the sheet moved. Changes you make now are kept on this device and will sync when you reconnect.</div>
+              <div style="display:flex;gap:10px;margin-top:18px;">
+                <button onClick="{{ reconnect }}" style="height:38px;padding:0 18px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Reconnect sheet</button>
+                <button style="height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;">Use a different sheet</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </sc-if>
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;">
+          <h3 style="margin:0;font-size:16px;font-weight:500;">Sheet structure</h3>
+          <a href="#" style="font-size:13px;color:var(--pri);font-weight:500;">Copy the template sheet →</a>
+        </div>
+        <div style="font-size:13px;color:var(--mute);margin-bottom:16px;">Ledger reads and writes these tabs. Keep the column headers exactly as shown.</div>
+        <div style="display:flex;flex-direction:column;">
+          <sc-for list="{{ sheetTabs }}" as="s" hint-placeholder-count="7">
+            <div style="display:grid;grid-template-columns:130px minmax(0,1fr);gap:14px;align-items:center;padding:11px 0;border-top:1px solid var(--line);">
+              <span style="font-size:14px;font-weight:500;">{{ s.name }}</span>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <sc-for list="{{ s.cols }}" as="c" hint-placeholder-count="5"><span style="font-size:12px;padding:3px 8px;border-radius:6px;background:var(--raised);border:1px solid var(--line);color:var(--mute);font-family:ui-monospace,monospace;">{{ c }}</span></sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- Categories -->
+    <sc-if value="{{ is.categories }}">
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <div style="display:flex;align-items:center;margin-bottom:18px;">
+          <div style="flex:1;"><h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:22px;">Categories</h2><div style="font-size:13px;color:var(--mute);margin-top:4px;">Drag to reorder. Icon and colour appear on chips and charts.</div></div>
+          <button style="display:flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add category</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;">
+          <sc-for list="{{ catGroups }}" as="g" hint-placeholder-count="2">
+            <div>
+              <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:8px;">{{ g.name }}</div>
+              <sc-for list="{{ g.items }}" as="c" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:14px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--mute)" style="cursor:grab;opacity:.6;"><circle cx="9" cy="6" r="1.5"></circle><circle cx="15" cy="6" r="1.5"></circle><circle cx="9" cy="12" r="1.5"></circle><circle cx="15" cy="12" r="1.5"></circle><circle cx="9" cy="18" r="1.5"></circle><circle cx="15" cy="18" r="1.5"></circle></svg>
+                  <span style="width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:{{ c.bg }};color:{{ c.color }};"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ c.icon }}"></path></svg></span>
+                  <span style="flex:1;">{{ c.name }}</span>
+                  <span style="width:14px;height:14px;border-radius:4px;background:{{ c.color }};"></span>
+                  <button style="all:unset;cursor:pointer;font-size:12px;color:var(--mute);">Edit</button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- Accounts -->
+    <sc-if value="{{ is.accounts }}">
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <div style="display:flex;align-items:center;margin-bottom:12px;">
+          <h2 style="flex:1;margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:22px;">Accounts</h2>
+          <button style="display:flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add account</button>
+        </div>
+        <sc-for list="{{ accounts }}" as="a" hint-placeholder-count="4">
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 160px 140px 60px;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--line);font-size:14px;">
+            <div><div style="font-weight:500;">{{ a.name }}</div><div style="font-size:12px;color:var(--mute);">{{ a.inst }}</div></div>
+            <span style="font-size:13px;color:var(--mute);">{{ a.type }}</span>
+            <span style="text-align:right;font-variant-numeric:tabular-nums;">{{ a.bal }}</span>
+            <button style="all:unset;cursor:pointer;font-size:12px;color:var(--mute);text-align:right;">Edit</button>
+          </div>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <!-- Appearance -->
+    <sc-if value="{{ is.appearance }}">
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <h2 style="margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size:22px;">Appearance</h2>
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Theme</div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,180px));gap:14px;">
+          <sc-for list="{{ themes }}" as="t" hint-placeholder-count="3">
+            <button onClick="{{ t.pick }}" style="padding:10px;border-radius:12px;border:{{ t.border }};background:var(--card);color:var(--ink);font:inherit;cursor:pointer;text-align:left;">
+              <div style="height:84px;border-radius:8px;background:{{ t.bg }};border:1px solid var(--line);display:flex;gap:6px;padding:8px;box-sizing:border-box;">
+                <div style="width:24%;border-radius:4px;background:{{ t.side }};"></div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px;"><div style="height:14px;border-radius:4px;background:{{ t.card }};"></div><div style="flex:1;border-radius:4px;background:{{ t.card }};"></div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;font-weight:500;"><span style="width:14px;height:14px;border-radius:50%;border:{{ t.radio }};box-sizing:border-box;"></span>{{ t.l }}</div>
+            </button>
+          </sc-for>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);margin-top:24px;max-width:320px;">App name
+          <input value="{{ appName }}" onChange="{{ setAppName }}" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;">
+          <span>Shown in the sidebar, login screen and export file names.</span>
+        </label>
+      </section>
+    </sc-if>
+
+    <!-- AI -->
+    <sc-if value="{{ is.ai }}">
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;">
+          <div style="flex:1;"><h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:22px;">AI Assistant</h2><div style="font-size:13px;color:var(--mute);margin-top:4px;">Answers questions using the data in your sheet.</div></div>
+          <button onClick="{{ toggleAi }}" role="switch" aria-checked="{{ aiAria }}" style="position:relative;width:44px;height:26px;border-radius:999px;border:0;background:{{ aiBg }};cursor:pointer;"><span style="position:absolute;top:3px;left:{{ aiKnob }};width:20px;height:20px;border-radius:50%;background:#FFFFFF;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .2s;"></span></button>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);max-width:520px;">API key
+          <div style="display:flex;gap:8px;"><input type="{{ keyType }}" value="sk-ant-demo-4f2a9c71e0b8" style="flex:1;height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:13px;outline:none;font-family:ui-monospace,monospace;"><button onClick="{{ toggleKey }}" style="height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;">{{ keyBtn }}</button></div>
+          <span>Stored as a Vercel environment variable, never in the browser.</span>
+        </label>
+      </section>
+    </sc-if>
+
+    <!-- Security -->
+    <sc-if value="{{ is.security }}">
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <h2 style="margin:0 0 4px;font-family:'Playfair Display',serif;font-weight:500;font-size:22px;">Change password</h2>
+        <div style="font-size:13px;color:var(--mute);margin-bottom:20px;">Checked on the server against APP_PASSWORD_HASH.</div>
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:420px;">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Current password<input type="password" value="{{ pw.cur }}" onChange="{{ setCur }}" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid {{ curBorder }};background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;"><sc-if value="{{ errCur }}"><span style="color:var(--neg);">Enter your current password</span></sc-if></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">New password<input type="password" value="{{ pw.nw }}" onChange="{{ setNew }}" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid {{ newBorder }};background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;">
+            <div style="display:flex;gap:4px;margin-top:2px;"><sc-for list="{{ strength }}" as="b" hint-placeholder-count="4"><span style="flex:1;height:4px;border-radius:2px;background:{{ b }};"></span></sc-for></div>
+            <span style="color:{{ strColor }};">{{ strLabel }}</span>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Confirm new password<input type="password" value="{{ pw.cf }}" onChange="{{ setCf }}" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid {{ cfBorder }};background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;"><sc-if value="{{ errCf }}"><span style="color:var(--neg);">Passwords don't match</span></sc-if></label>
+          <button onClick="{{ savePw }}" style="align-self:flex-start;height:38px;padding:0 18px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Update password</button>
+        </div>
+      </section>
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;display:flex;flex-direction:column;gap:22px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+          <div><div style="font-size:15px;font-weight:500;">Auto-lock</div><div style="font-size:13px;color:var(--mute);">Lock after a period of inactivity</div></div>
+          <div style="display:flex;padding:3px;border-radius:10px;background:var(--raised);border:1px solid var(--line);">
+            <sc-for list="{{ locks }}" as="l" hint-placeholder-count="4"><button onClick="{{ l.pick }}" style="height:30px;padding:0 12px;border:0;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;background:{{ l.bg }};color:{{ l.color }};box-shadow:{{ l.sh }};">{{ l.l }}</button></sc-for>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;border-top:1px solid var(--line);">
+          <div><div style="font-size:15px;font-weight:500;">Last login</div><div style="font-size:13px;color:var(--mute);">Today at 9:14 am · Sydney · Safari on macOS</div></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;border-top:1px solid var(--line);">
+          <div><div style="font-size:15px;font-weight:500;">Log out of all devices</div><div style="font-size:13px;color:var(--mute);">Ends every session, including "Remember me" ones</div></div>
+          <button onClick="{{ logoutAll }}" style="height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--neg);background:transparent;color:var(--neg);font:inherit;font-size:13px;cursor:pointer;">Log out everywhere</button>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- Export Centre -->
+    <sc-if value="{{ is.export }}">
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <h2 style="margin:0 0 4px;font-family:'Playfair Display',serif;font-weight:500;font-size:22px;">Export Centre</h2>
+        <div style="font-size:13px;color:var(--mute);margin-bottom:20px;">Share clean CSV files with your bank, accountant or adviser.</div>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;">
+          <sc-for list="{{ presets }}" as="p" hint-placeholder-count="4">
+            <button onClick="{{ p.pick }}" style="text-align:left;padding:16px;border-radius:12px;border:1px solid {{ p.border }};background:{{ p.bg }};color:var(--ink);font:inherit;cursor:pointer;">
+              <div style="width:30px;height:30px;border-radius:8px;background:var(--raised);color:{{ p.ic }};display:grid;place-items:center;margin-bottom:10px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ p.icon }}"></path></svg></div>
+              <div style="font-size:14px;font-weight:500;">{{ p.l }}</div>
+              <div style="font-size:12px;color:var(--mute);margin-top:4px;line-height:1.45;">{{ p.d }}</div>
+            </button>
+          </sc-for>
+        </div>
+      </section>
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;">
+        <div>
+          <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Datasets</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <sc-for list="{{ datasets }}" as="d" hint-placeholder-count="9">
+              <button onClick="{{ d.toggle }}" style="display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:9px;border:1px solid {{ d.border }};background:{{ d.bg }};color:var(--ink);font:inherit;font-size:13px;cursor:pointer;text-align:left;">
+                <span style="flex:none;width:16px;height:16px;border-radius:4px;border:1.5px solid {{ d.box }};background:{{ d.fill }};display:grid;place-items:center;color:var(--priInk);"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:{{ d.op }};"><path d="M20 6 9 17l-5-5"></path></svg></span>{{ d.l }}
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:18px;">
+          <div>
+            <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Date range</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ ranges }}" as="r" hint-placeholder-count="8"><button onClick="{{ r.pick }}" style="height:30px;padding:0 12px;border-radius:999px;border:1px solid {{ r.border }};background:{{ r.bg }};color:{{ r.color }};font:inherit;font-size:12px;cursor:pointer;">{{ r.l }}</button></sc-for>
+            </div>
+            <sc-if value="{{ isCustom }}">
+              <div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--mute);">
+                <input type="date" value="2026-05-01" style="height:36px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:13px;color-scheme:{{ scheme }};">to<input type="date" value="2026-10-30" style="height:36px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:13px;color-scheme:{{ scheme }};">
+              </div>
+            </sc-if>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Transaction columns</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ cols }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.toggle }}" style="height:30px;padding:0 10px;border-radius:8px;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }};font:inherit;font-size:12px;cursor:pointer;text-decoration:{{ c.strike }};font-family:ui-monospace,monospace;">{{ c.l }}</button></sc-for>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);overflow:hidden;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;padding:22px 24px 14px;">
+          <h3 style="margin:0;font-size:16px;font-weight:500;">Preview · {{ previewFile }}</h3>
+          <span style="font-size:12px;color:var(--mute);">First 10 rows</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <div style="min-width:max-content;font-family:ui-monospace,monospace;font-size:12px;">
+            <div style="display:flex;background:var(--raised);border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--mute);padding:0 24px;">
+              <sc-for list="{{ previewHead }}" as="h" hint-placeholder-count="7"><span style="width:{{ h.w }};padding:9px 8px;flex:none;">{{ h.l }}</span></sc-for>
+            </div>
+            <sc-for list="{{ previewRows }}" as="r" hint-placeholder-count="10">
+              <div style="display:flex;padding:0 24px;border-bottom:1px solid var(--line);">
+                <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="7"><span style="width:{{ c.w }};padding:8px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.v }}</span></sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:18px 24px;background:var(--raised);border-top:1px solid var(--line);">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:500;">{{ fileSummary }}</div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mute);margin-top:4px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11h14v11H5zM7 11V7a5 5 0 0 1 10 0v4"></path></svg>This file contains personal financial data. Share only with people you trust.</div>
+          </div>
+          <button onClick="{{ download }}" style="display:flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:14px;font-weight:500;cursor:pointer;opacity:{{ dlOp }};">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>{{ dlLabel }}
+          </button>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- Data -->
+    <sc-if value="{{ is.backup }}">
+      <section style="background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;display:flex;flex-direction:column;gap:22px;">
+        <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:22px;">Data</h2>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+          <div><div style="font-size:15px;font-weight:500;">Export everything</div><div style="font-size:13px;color:var(--mute);">Full backup as a .zip of CSV files</div></div>
+          <button onClick="{{ fullBackup }}" style="height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;">Export CSV</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;border-top:1px solid var(--line);">
+          <div><div style="font-size:15px;font-weight:500;">Run setup again</div><div style="font-size:13px;color:var(--mute);">Reopen the onboarding wizard</div></div>
+          <button onClick="{{ onboard }}" style="height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;">Open wizard</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;border-top:1px solid var(--line);">
+          <div><div style="font-size:15px;font-weight:500;">Reset demo data</div><div style="font-size:13px;color:var(--mute);">Restores Alex's sample data. Doesn't touch a connected sheet.</div></div>
+          <button onClick="{{ resetDemo }}" style="height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--neg);background:transparent;color:var(--neg);font:inherit;font-size:13px;cursor:pointer;">Reset demo data</button>
+        </div>
+      </section>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const TABS = [
+  ['profile', 'Profile', "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"],
+  ['data', 'Data source', "M4 3h16v18H4zM4 9h16M4 15h16M10 9v12"],
+  ['categories', 'Categories', "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"],
+  ['accounts', 'Accounts', "M3 10h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zM7 15h4"],
+  ['appearance', 'Appearance', "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"],
+  ['ai', 'AI Assistant', "M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"],
+  ['security', 'Security', "M5 11h14v11H5zM7 11V7a5 5 0 0 1 10 0v4"],
+  ['export', 'Export Centre', "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"],
+  ['backup', 'Data', "M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"]
+];
+const CI = {
+  cart: "M8 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM19 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM2 2h3l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6",
+  coffee: "M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z",
+  fuel: "M3 22h12M4 9h10M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18",
+  home: "M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z",
+  bolt: "M13 2 3 14h9l-1 8 10-12h-9z", bag: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18",
+  brief: "M2 7h20v14H2zM16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2", spark: "M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z",
+  trend: "M22 7 13.5 15.5 8.5 10.5 2 17M16 7h6v6", plus: "M12 5v14M5 12h14"
+};
+const DS = ['Transactions', 'Income Summary', 'Expense Summary', 'Budgets', 'Goals', 'Investments', 'Liabilities', 'Net Worth History', 'Projections'];
+const RANGES = ['This month', 'This quarter', 'Last 3 months', 'Last 6 months', 'Last 12 months', 'This financial year', 'Last financial year', 'Custom'];
+const RANGE_DATES = { 'This month': ['2026-10-01', '2026-10-30'], 'This quarter': ['2026-10-01', '2026-10-30'], 'Last 3 months': ['2026-08-01', '2026-10-30'], 'Last 6 months': ['2026-05-01', '2026-10-30'], 'Last 12 months': ['2025-11-01', '2026-10-30'], 'This financial year': ['2026-07-01', '2026-10-30'], 'Last financial year': ['2025-07-01', '2026-06-30'], 'Custom': ['2026-05-01', '2026-10-30'] };
+const PRESETS = [
+  { l: 'Home Loan Application', d: '6 months of income & expenses, assets, liabilities, deposit savings', icon: CI.home, ds: ['Transactions', 'Income Summary', 'Expense Summary', 'Investments', 'Liabilities', 'Goals'], r: 'Last 6 months' },
+  { l: 'Investment Adviser', d: 'Holdings, allocation, net worth history, FIRE inputs', icon: CI.trend, ds: ['Investments', 'Net Worth History', 'Projections'], r: 'Last 12 months' },
+  { l: 'Accountant / Tax', d: 'Full financial year of transactions by category', icon: CI.brief, ds: ['Transactions', 'Expense Summary', 'Income Summary'], r: 'Last financial year' },
+  { l: 'Full Backup', d: 'Every dataset, all time', icon: "M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6", ds: DS.slice(), r: 'Last 12 months' }
+];
+const COLS = ['date', 'description', 'category', 'type', 'amount', 'currency', 'account', 'notes'];
+const ROWS = [
+  ['2026-10-30', 'Woolworths Metro', 'Groceries', 'Expense', '-86.40', 'AUD', 'Everyday', ''],
+  ['2026-10-30', 'UBank interest', 'Interest & Dividends', 'Income', '172.40', 'AUD', 'Savings', ''],
+  ['2026-10-29', 'Ampol Surry Hills', 'Transport', 'Expense', '-72.15', 'AUD', 'Everyday', ''],
+  ['2026-10-28', 'Single O Café', 'Dining Out', 'Expense', '-18.50', 'AUD', 'Everyday', ''],
+  ['2026-10-28', 'Northwind Studio · consulting', 'Side Income', 'Income', '640.00', 'AUD', 'Business Draws', 'Invoice #0142'],
+  ['2026-10-27', 'Netflix', 'Subscriptions', 'Expense', '-18.99', 'AUD', 'Everyday', ''],
+  ['2026-10-26', 'Event Cinemas', 'Entertainment', 'Expense', '-46.00', 'AUD', 'Everyday', ''],
+  ['2026-10-25', 'Bunnings Warehouse', 'Shopping', 'Expense', '-54.80', 'AUD', 'Everyday', ''],
+  ['2026-10-24', 'Telstra', 'Phone', 'Expense', '-65.00', 'AUD', 'Everyday', ''],
+  ['2026-10-23', 'Coles Broadway', 'Groceries', 'Expense', '-112.35', 'AUD', 'Everyday', '']
+];
+const COLW = { date: '110px', description: '230px', category: '170px', type: '90px', amount: '90px', currency: '80px', account: '130px', notes: '140px' };
+
+class Component extends DCLogic {
+  state = { tab: null, preset: 0, ds: PRESETS[0].ds.slice(), range: 'Last 6 months', cols: COLS.filter(c => c !== 'notes'), ai: true, showKey: false, pw: { cur: '', nw: '', cf: '' }, pwErr: {}, autolock: '30 min', appName: 'Ledger', spinning: false, lastSync: '2 min ago' };
+  componentDidUpdate(prev) { if (prev.tab !== this.props.tab && this.state.tab) this.setState({ tab: null }); }
+  toast(m) { this.props.onToast && this.props.onToast(m); }
+  renderVals() {
+    const s = this.state, tab = s.tab || this.props.tab || 'profile', dark = this.props.theme === 'dark';
+    const sync = this.props.sync || 'synced';
+    const is = Object.fromEntries(TABS.map(t => [t[0], tab === t[0]]));
+    const hue = (h) => dark ? [`oklch(0.78 0.09 ${h})`, `oklch(0.78 0.09 ${h} / 0.14)`] : [`oklch(0.48 0.09 ${h})`, `oklch(0.55 0.09 ${h} / 0.1)`];
+    const cat = (name, icon, h) => { const [color, bg] = hue(h); return { name, icon, color, bg }; };
+    const catGroups = [
+      { name: 'Expense', items: [cat('Rent', CI.home, 290), cat('Groceries', CI.cart, 150), cat('Dining Out', CI.coffee, 40), cat('Transport', CI.fuel, 250), cat('Utilities & Internet', CI.bolt, 205), cat('Shopping', CI.bag, 75)] },
+      { name: 'Income', items: [cat("Business Owner's Draws", CI.brief, 158), cat('Side Income', CI.spark, 158), cat('Interest & Dividends', CI.trend, 158), cat('Other Income', CI.plus, 158)] }
+    ];
+    const seg = (on) => ({ bg: on ? 'var(--card)' : 'transparent', color: on ? 'var(--ink)' : 'var(--mute)', sh: on ? '0 1px 3px rgba(0,0,0,.1)' : 'none' });
+    const nw = s.pw.nw, score = Math.min(4, (nw.length >= 8) + (nw.length >= 12) + (/[A-Z]/.test(nw) && /[a-z]/.test(nw)) + (/[0-9\W]/.test(nw)));
+    const strColors = ['var(--neg)', 'var(--neg)', 'var(--gold)', 'var(--pri)', 'var(--pri)'];
+    const [from, to] = RANGE_DATES[s.range];
+    const prevCols = COLS.filter(c => s.cols.includes(c));
+    const nFiles = s.ds.length;
+    const setPw = k => e => { const v = e.target.value; this.setState(st => ({ pw: { ...st.pw, [k]: v }, pwErr: { ...st.pwErr, [k]: false } })); };
+    return {
+      tabs: TABS.map(([k, l, icon]) => ({ l, icon, pick: () => this.setState({ tab: k }), bg: tab === k ? 'var(--priSoft)' : 'transparent', color: tab === k ? 'var(--pri)' : 'var(--ink)', weight: tab === k ? 500 : 400 })),
+      is, saved: () => this.toast('Profile saved'),
+      syncOk: sync !== 'error', syncErr: sync === 'error',
+      syncPill: sync === 'syncing' ? 'Syncing' : 'Connected', syncPillBg: sync === 'syncing' ? 'var(--goldSoft)' : 'var(--priSoft)', syncPillColor: sync === 'syncing' ? 'var(--goldInk)' : 'var(--pri)',
+      lastSync: sync === 'syncing' ? 'now' : s.lastSync, syncBtn: sync === 'syncing' ? 'Syncing…' : 'Sync now', syncBtnOp: sync === 'syncing' ? 0.7 : 1, spin: sync === 'syncing' ? '360deg' : '0deg',
+      syncNow: () => { if (sync === 'syncing') return; this.props.onSync && this.props.onSync('syncing'); setTimeout(() => { this.props.onSync && this.props.onSync('synced'); this.setState({ lastSync: 'just now' }); this.toast('Synced with Google Sheets'); }, 1600); },
+      disconnect: () => this.props.onSync && this.props.onSync('error'),
+      reconnect: () => { this.props.onSync && this.props.onSync('syncing'); setTimeout(() => { this.props.onSync && this.props.onSync('synced'); this.setState({ lastSync: 'just now' }); this.toast('Sheet reconnected'); }, 1400); },
+      sheetTabs: [['Transactions', ['Date', 'Description', 'Category', 'Type', 'Amount', 'Account', 'Notes']], ['Budgets', ['Category', 'Monthly Limit']], ['Goals', ['Name', 'Target Amount', 'Current Amount', 'Target Date', 'Priority', 'Icon', 'Status']], ['Investments', ['Name', 'Asset Type', 'Ticker', 'Units', 'Cost Basis', 'Current Value', 'Last Updated']], ['Liabilities', ['Name', 'Type', 'Balance', 'Interest Rate']], ['Categories', ['Name', 'Type', 'Icon', 'Colour']], ['Settings', ['Key', 'Value']]].map(([name, cols]) => ({ name, cols })),
+      catGroups,
+      accounts: [['Everyday', 'ING Orange Everyday', 'Transaction', '$6,200'], ['Savings', 'UBank HISA + ING Maximiser', 'Savings', '$93,400'], ['Business Draws', 'Studio Pty Ltd → personal', 'Income', '—'], ['Investment', 'Pearler · Swyftx', 'Brokerage', '$70,750']].map(([name, inst, type, bal]) => ({ name, inst, type, bal })),
+      themes: [['light', 'Light', '#F7F8F5', '#FFFFFF', '#FFFFFF'], ['dark', 'Dark', '#0A0A0A', '#141414', '#1C1C1C'], ['system', 'System', 'linear-gradient(90deg,#F7F8F5 50%,#0A0A0A 50%)', '#C9CCC6', '#9CA39E']].map(([k, l, bg, side, card]) => {
+        const on = (k === 'system' ? false : (this.props.theme || 'light') === k);
+        return { l, bg, side, card, border: on ? '2px solid var(--pri)' : '1px solid var(--line)', radio: on ? '4px solid var(--pri)' : '1.5px solid var(--mute)', pick: () => { if (k !== 'system') this.props.onTheme && this.props.onTheme(k); else this.props.onTheme && this.props.onTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } };
+      }),
+      appName: s.appName, setAppName: e => this.setState({ appName: e.target.value }),
+      toggleAi: () => this.setState({ ai: !s.ai }), aiAria: String(s.ai), aiBg: s.ai ? 'var(--pri)' : 'var(--track)', aiKnob: s.ai ? '21px' : '3px',
+      keyType: s.showKey ? 'text' : 'password', keyBtn: s.showKey ? 'Hide' : 'Show', toggleKey: () => this.setState({ showKey: !s.showKey }),
+      pw: s.pw, setCur: setPw('cur'), setNew: setPw('nw'), setCf: setPw('cf'),
+      errCur: !!s.pwErr.cur, errCf: !!s.pwErr.cf, curBorder: s.pwErr.cur ? 'var(--neg)' : 'var(--line)', newBorder: s.pwErr.nw ? 'var(--neg)' : 'var(--line)', cfBorder: s.pwErr.cf ? 'var(--neg)' : 'var(--line)',
+      strength: [0, 1, 2, 3].map(i => i < score ? strColors[score] : 'var(--track)'),
+      strLabel: nw ? ['Too short', 'Weak', 'Fair', 'Strong', 'Very strong'][score] : 'At least 12 characters recommended', strColor: nw ? strColors[score] : 'var(--mute)',
+      savePw: () => { const e = { cur: !s.pw.cur, nw: s.pw.nw.length < 8, cf: s.pw.cf !== s.pw.nw || !s.pw.cf }; if (e.cur || e.nw || e.cf) { this.setState({ pwErr: e }); return; } this.setState({ pw: { cur: '', nw: '', cf: '' }, pwErr: {} }); this.toast('Password updated · other sessions signed out'); },
+      locks: ['15 min', '30 min', '1 hour', 'Never'].map(l => ({ l, ...seg(s.autolock === l), pick: () => this.setState({ autolock: l }) })),
+      logoutAll: () => this.toast('Logged out of 2 other devices'),
+      presets: PRESETS.map((p, i) => ({ l: p.l, d: p.d, icon: p.icon, ic: s.preset === i ? 'var(--goldInk)' : 'var(--mute)', bg: s.preset === i ? 'var(--goldSoft)' : 'var(--card)', border: s.preset === i ? 'var(--gold)' : 'var(--line)', pick: () => this.setState({ preset: i, ds: p.ds.slice(), range: p.r }) })),
+      datasets: DS.map(l => { const on = s.ds.includes(l); return { l, op: on ? 1 : 0, fill: on ? 'var(--pri)' : 'transparent', box: on ? 'var(--pri)' : 'var(--mute)', bg: on ? 'var(--priSoft)' : 'transparent', border: on ? 'transparent' : 'var(--line)', toggle: () => this.setState(st => ({ preset: -1, ds: on ? st.ds.filter(x => x !== l) : [...st.ds, l] })) }; }),
+      ranges: RANGES.map(l => ({ l, bg: s.range === l ? 'var(--ink)' : 'transparent', color: s.range === l ? 'var(--card)' : 'var(--ink)', border: s.range === l ? 'var(--ink)' : 'var(--line)', pick: () => this.setState({ range: l }) })),
+      isCustom: s.range === 'Custom', scheme: dark ? 'dark' : 'light',
+      cols: COLS.map(l => { const on = s.cols.includes(l); return { l, bg: on ? 'var(--raised)' : 'transparent', color: on ? 'var(--ink)' : 'var(--mute)', border: on ? 'var(--line)' : 'var(--line)', strike: on ? 'none' : 'line-through', toggle: () => this.setState(st => ({ cols: on ? st.cols.filter(x => x !== l) : [...st.cols, l] })) }; }),
+      previewFile: `${s.appName.toLowerCase().replace(/\s+/g, '_') || 'ledger'}_transactions_${from}_to_${to}.csv`,
+      previewHead: prevCols.map(c => ({ l: c, w: COLW[c] })),
+      previewRows: ROWS.map(r => ({ cells: prevCols.map(c => ({ v: r[COLS.indexOf(c)], w: COLW[c] })) })),
+      fileSummary: nFiles === 0 ? 'Choose at least one dataset' : nFiles === 1 ? '1 CSV file' : `${nFiles} CSV files bundled as ${s.appName.toLowerCase() || 'ledger'}_export_${to}.zip`,
+      dlLabel: nFiles > 1 ? 'Download .zip' : 'Download CSV', dlOp: nFiles ? 1 : 0.4,
+      download: () => { if (nFiles) this.toast(`Exported ${nFiles} file${nFiles > 1 ? 's' : ''}`); },
+      fullBackup: () => this.toast('Exported 9 files'), resetDemo: () => this.toast('Demo data restored'),
+      onboard: () => this.props.onOnboard && this.props.onOnboard()
+    };
+  }
+}
+</script>
+</body>
+</html>

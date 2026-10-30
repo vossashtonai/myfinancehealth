@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@keyframes ledgerShimmer{0%{transform:translateX(-120%)}60%,100%{transform:translateX(220%)}}
+@keyframes ledgerSpark{0%{opacity:0;transform:translateY(6px) scale(.6)}40%{opacity:1}100%{opacity:0;transform:translateY(-18px) scale(1)}}
+</style>
+</helmet>
+<div style="padding:28px 32px 48px;">
+  <sc-if value="{{ isGrid }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+      <div style="flex:1;font-size:14px;color:var(--mute);">4 goals · <span style="color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums;">$105,450</span> saved of $187,000</div>
+      <button onClick="{{ exportCsv }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;" style-hover="border-color:var(--gold);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
+        Export CSV
+      </button>
+      <button onClick="{{ openAdd }}" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        Add goal
+      </button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;">
+      <section onClick="{{ openDetail }}" style="grid-column:span 2;position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;cursor:pointer;transition:transform .25s,box-shadow .25s;overflow:hidden;display:grid;grid-template-columns:180px minmax(0,1fr);gap:32px;align-items:center;" style-hover="transform:translateY(-2px);box-shadow:var(--shH);">
+        <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+        <div style="position:relative;width:180px;height:180px;">
+          <svg width="180" height="180" viewBox="0 0 100 100" style="transform:rotate(-90deg);">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="var(--track)" stroke-width="4"></circle>
+            <circle cx="50" cy="50" r="44" fill="none" stroke="var(--pri)" stroke-width="4" stroke-linecap="round" stroke-dasharray="276.46" stroke-dashoffset="118.88"></circle>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <span style="font-family:'Playfair Display',serif;font-size:40px;font-weight:500;">57%</span>
+            <span style="font-size:12px;color:var(--mute);">funded</span>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--goldInk);">Featured · priority 1</div>
+            <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:3px 9px;border-radius:999px;background:var(--goldSoft);color:var(--goldInk);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"></path></svg>Ahead by 4 months</span>
+          </div>
+          <div style="font-family:'Playfair Display',serif;font-size:30px;font-weight:500;margin:8px 0 4px;">House Deposit</div>
+          <div style="font-size:14px;color:var(--mute);font-variant-numeric:tabular-nums;"><span style="color:var(--ink);font-weight:500;">$68,400</span> of $120,000 · target Dec 2028</div>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;">
+            <div><div style="color:var(--mute);margin-bottom:4px;">Monthly needed</div><div style="font-size:15px;font-weight:500;">$2,060</div></div>
+            <div><div style="color:var(--mute);margin-bottom:4px;">Contributing</div><div style="font-size:15px;font-weight:500;color:var(--pri);">$2,500</div></div>
+            <div><div style="color:var(--mute);margin-bottom:4px;">Est. completion</div><div style="font-size:15px;font-weight:500;">Aug 2028</div></div>
+          </div>
+          <div style="margin-top:16px;font-size:13px;color:var(--pri);font-weight:500;">View projection and history →</div>
+        </div>
+      </section>
+      <sc-for list="{{ goals }}" as="g" hint-placeholder-count="3">
+        <section style="position:relative;background:var(--card);border:1px solid {{ g.border }};border-radius:16px;box-shadow:var(--sh);padding:24px;display:flex;flex-direction:column;gap:16px;transition:transform .25s,box-shadow .25s;overflow:hidden;" style-hover="transform:translateY(-2px);box-shadow:var(--shH);">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="width:38px;height:38px;border-radius:10px;background:{{ g.iconBg }};color:{{ g.iconColor }};display:grid;place-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ g.icon }}"></path></svg></div>
+            <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:999px;background:{{ g.sBg }};color:{{ g.sColor }};"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="{{ g.sIcon }}"></path></svg>{{ g.status }}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="position:relative;flex:none;width:72px;height:72px;">
+              <svg width="72" height="72" viewBox="0 0 100 100" style="transform:rotate(-90deg);"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--track)" stroke-width="7"></circle><circle cx="50" cy="50" r="42" fill="none" stroke="{{ g.ring }}" stroke-width="7" stroke-linecap="round" stroke-dasharray="263.89" stroke-dashoffset="{{ g.off }}"></circle></svg>
+              <div style="position:absolute;inset:0;display:grid;place-items:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;">{{ g.pct }}</div>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:17px;font-weight:500;">{{ g.name }}</div>
+              <div style="font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums;margin-top:2px;">{{ g.saved }} of {{ g.target }}</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;">
+            <div><div style="color:var(--mute);margin-bottom:3px;">Target date</div><div style="font-size:14px;font-weight:500;">{{ g.date }}</div></div>
+            <div><div style="color:var(--mute);margin-bottom:3px;">{{ g.mLabel }}</div><div style="font-size:14px;font-weight:500;font-variant-numeric:tabular-nums;">{{ g.monthly }}</div></div>
+          </div>
+        </section>
+      </sc-for>
+      <button onClick="{{ openAdd }}" style="border:1.5px dashed var(--line);border-radius:16px;background:transparent;color:var(--mute);font:inherit;font-size:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:220px;" style-hover="border-color:var(--gold);color:var(--ink);">
+        <span style="width:40px;height:40px;border-radius:50%;border:1px solid currentColor;display:grid;place-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
+        Add a goal
+      </button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isDetail }}">
+    <button onClick="{{ closeDetail }}" style="all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--mute);margin-bottom:18px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>All goals
+    </button>
+    <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:20px;">
+      <div style="grid-column:span 12;position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;padding:16px 22px;border-radius:14px;border:1px solid var(--gold);background:var(--goldSoft);">
+        <div style="position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);animation:ledgerShimmer 3.2s ease-in-out infinite;pointer-events:none;"></div>
+        <div style="position:relative;width:34px;height:34px;border-radius:50%;background:var(--gold);color:#1A1405;display:grid;place-items:center;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM8.21 13.89 7 23l5-3 5 3-1.21-9.12"></path></svg>
+          <span style="position:absolute;top:-4px;right:-6px;width:5px;height:5px;border-radius:50%;background:var(--gold);animation:ledgerSpark 2s ease-out infinite;"></span>
+          <span style="position:absolute;bottom:2px;left:-8px;width:4px;height:4px;border-radius:50%;background:var(--gold);animation:ledgerSpark 2s ease-out .7s infinite;"></span>
+        </div>
+        <div style="position:relative;flex:1;">
+          <div style="font-size:14px;font-weight:600;color:var(--goldInk);">50% milestone reached</div>
+          <div style="font-size:13px;color:var(--ink);">You passed $60,000 on 14 Aug 2026. Next milestone: 75% at $90,000, projected Jun 2027.</div>
+        </div>
+      </div>
+
+      <section style="grid-column:span 4;position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;overflow:hidden;">
+        <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"></path></svg></div>
+          <div><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:500;">House Deposit</div><div style="font-size:12px;color:var(--mute);">Linked to High-Interest Savings</div></div>
+        </div>
+        <div style="font-family:'Playfair Display',serif;font-size:52px;font-weight:500;margin:24px 0 4px;font-variant-numeric:tabular-nums lining-nums;">$68,400</div>
+        <div style="font-size:14px;color:var(--mute);">of $120,000 · $51,600 to go</div>
+        <div style="margin-top:26px;position:relative;height:8px;border-radius:999px;background:var(--track);">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:57%;border-radius:999px;background:var(--pri);"></div>
+          <sc-for list="{{ milestones }}" as="ms" hint-placeholder-count="4">
+            <div style="position:absolute;left:{{ ms.left }};top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);background:{{ ms.fill }};border:2px solid var(--gold);"></div>
+          </sc-for>
+        </div>
+        <div style="position:relative;height:34px;margin-top:10px;">
+          <sc-for list="{{ milestones }}" as="ms" hint-placeholder-count="4">
+            <div style="position:absolute;left:{{ ms.left }};transform:translateX({{ ms.tx }});text-align:{{ ms.align }};font-size:11px;line-height:1.4;font-variant-numeric:tabular-nums;">
+              <div style="font-weight:600;color:{{ ms.color }};">{{ ms.pct }}</div><div style="color:var(--mute);">{{ ms.when }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line);font-size:14px;">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--mute);">Estimated completion</span><span style="font-weight:500;">Aug 2028</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--mute);">Target date</span><span style="font-weight:500;">Dec 2028</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--mute);">Required per month</span><span style="font-weight:500;">$2,060</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--mute);">Average contribution</span><span style="font-weight:500;color:var(--pri);">$2,500</span></div>
+        </div>
+      </section>
+
+      <section style="grid-column:span 8;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;">
+          <div><h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Projection</h2><div style="font-size:13px;color:var(--mute);margin-top:4px;">Current trajectory vs what's required to hit Dec 2028</div></div>
+          <div style="display:flex;gap:16px;font-size:12px;color:var(--mute);">
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:3px;border-radius:2px;background:var(--pri);"></span>Saved</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;border-top:2px dashed var(--pri);"></span>Current pace</span>
+            <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;border-top:2px dashed var(--mute);"></span>Required</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;">
+          <div style="display:flex;flex-direction:column;justify-content:space-between;height:292px;font-size:11px;color:var(--mute);text-align:right;margin-top:-6px;"><span>$120k</span><span>$90k</span><span>$60k</span><span>$30k</span><span>$0</span></div>
+          <div style="flex:1;min-width:0;">
+            <div style="position:relative;height:280px;border-bottom:1px solid var(--line);">
+              <div style="position:absolute;left:0;right:0;top:0;border-top:1.5px dashed var(--gold);"></div>
+              <div style="position:absolute;left:0;right:0;top:25%;border-top:1px dashed var(--line);"></div>
+              <div style="position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--line);"></div>
+              <div style="position:absolute;left:0;right:0;top:75%;border-top:1px dashed var(--line);"></div>
+              <div style="position:absolute;top:0;bottom:0;left:{{ todayX }};border-left:1.5px solid var(--gold);"><span style="position:absolute;top:6px;left:6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--goldInk);">Today</span></div>
+              <svg viewBox="0 0 1000 280" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;">
+                <path d="{{ savedArea }}" fill="var(--pri)" fill-opacity=".12"></path>
+                <path d="{{ savedLine }}" fill="none" stroke="var(--pri)" stroke-width="2.5" vector-effect="non-scaling-stroke"></path>
+                <path d="{{ paceLine }}" fill="none" stroke="var(--pri)" stroke-width="2.5" stroke-dasharray="6 5" vector-effect="non-scaling-stroke"></path>
+                <path d="{{ reqLine }}" fill="none" stroke="var(--mute)" stroke-width="1.8" stroke-dasharray="4 5" vector-effect="non-scaling-stroke"></path>
+              </svg>
+              <div style="position:absolute;left:{{ doneX }};top:0;width:12px;height:12px;border-radius:50%;background:var(--gold);transform:translate(-50%,-50%);box-shadow:0 0 0 4px var(--goldSoft);"></div>
+              <div style="position:absolute;left:{{ doneX }};top:12px;transform:translateX(-100%);font-size:12px;font-weight:600;color:var(--goldInk);white-space:nowrap;padding-right:8px;">Aug 2028</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:var(--mute);"><span>Nov 2025</span><span>Jun 2026</span><span>Jan 2027</span><span>Aug 2027</span><span>Mar 2028</span><span>Dec 2028</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section style="grid-column:span 12;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:28px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+          <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:21px;">Contribution history</h2>
+          <span style="font-size:13px;color:var(--mute);">Last 12 months · $32,200</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px;">
+          <sc-for list="{{ history }}" as="h" hint-placeholder-count="12">
+            <div style="display:grid;grid-template-columns:90px minmax(0,1fr) 110px;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:14px;">
+              <span style="color:var(--mute);font-size:13px;">{{ h.date }}</span>
+              <span>{{ h.desc }}</span>
+              <span style="text-align:right;font-weight:500;color:var(--pri);font-variant-numeric:tabular-nums;">{{ h.amt }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ addOpen }}">
+    <div onClick="{{ closeAdd }}" style="position:fixed;inset:0;z-index:30;background:rgba(8,10,8,.45);"></div>
+    <div role="dialog" aria-label="Add goal" style="position:fixed;z-index:31;top:90px;left:50%;transform:translateX(-50%);width:540px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.28);overflow:hidden;">
+      <div style="position:absolute;top:0;left:28px;right:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+      <div style="display:flex;align-items:center;padding:22px 26px 0;">
+        <div style="flex:1;font-family:'Playfair Display',serif;font-size:22px;font-weight:500;">Add goal</div>
+        <button onClick="{{ closeAdd }}" title="Close" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--mute);display:grid;place-items:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
+      </div>
+      <div style="padding:20px 26px 0;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <label style="grid-column:span 2;display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Goal name
+          <input value="{{ f.name }}" onChange="{{ setName }}" placeholder="e.g. Wedding" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid {{ nameBorder }};background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;">
+          <sc-if value="{{ errName }}"><span style="color:var(--neg);">Give your goal a name</span></sc-if>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Target amount
+          <input value="{{ f.target }}" onChange="{{ setTarget }}" inputmode="decimal" placeholder="$0" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid {{ targetBorder }};background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;font-variant-numeric:tabular-nums;">
+          <sc-if value="{{ errTarget }}"><span style="color:var(--neg);">Enter a target above $0</span></sc-if>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Current amount
+          <input value="{{ f.current }}" onChange="{{ setCurrent }}" inputmode="decimal" placeholder="$0" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;font-variant-numeric:tabular-nums;">
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Target date
+          <input type="month" value="{{ f.date }}" onChange="{{ setDate }}" style="height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;color-scheme:{{ scheme }};">
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Linked account (optional)
+          <select style="height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;"><option>None</option><option>High-Interest Savings</option><option>Everyday</option><option>Investment</option></select>
+        </label>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Priority
+          <div style="display:flex;padding:3px;border-radius:10px;background:var(--raised);border:1px solid var(--line);">
+            <sc-for list="{{ prios }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.pick }}" style="flex:1;height:32px;border:0;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;background:{{ p.bg }};color:{{ p.color }};">{{ p.l }}</button></sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Icon
+          <div style="display:flex;gap:6px;">
+            <sc-for list="{{ icons }}" as="i" hint-placeholder-count="6"><button onClick="{{ i.pick }}" title="{{ i.name }}" style="width:38px;height:38px;border-radius:9px;border:1px solid {{ i.border }};background:{{ i.bg }};color:{{ i.color }};display:grid;place-items:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ i.d }}"></path></svg></button></sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;padding:18px 26px;margin-top:22px;border-top:1px solid var(--line);background:var(--raised);">
+        <button onClick="{{ closeAdd }}" style="height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;">Cancel</button>
+        <button onClick="{{ saveGoal }}" style="height:38px;padding:0 18px;border-radius:10px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Create goal</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const I = {
+  shield: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z", plane: "M2 16l20-8-6 12-3-5zM13 15l9-7",
+  car: "M5 17H3v-5l2.5-5h11L19 12h2v5h-2M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM9 17h6M5 12h14",
+  house: "M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z", gift: "M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8S10 3 7.5 4 9 8 12 8zM12 8s2-5 4.5-4S15 8 12 8z",
+  grad: "M22 10 12 5 2 10l10 5zM6 12v5c3 2 9 2 12 0v-5",
+  check: "M20 6 9 17l-5-5", alert: "M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+};
+const C = 263.89;
+const SAVED = [38400, 40900, 43400, 45900, 48400, 50900, 53400, 55900, 58400, 63700, 65900, 68400];
+
+class Component extends DCLogic {
+  state = { detail: null, add: false, f: { name: '', target: '', current: '', date: '2027-12', prio: 2, icon: 'gift' }, errs: {} };
+  renderVals() {
+    const s = this.state, detail = s.detail ?? !!this.props.detail;
+    const goals = [
+      { name: 'Emergency Fund', icon: I.shield, saved: '$25,000', target: '$25,000', pct: '100%', off: 0, date: 'Aug 2026', mLabel: 'Status', monthly: 'Fully funded', status: 'Completed', sIcon: I.check, sBg: 'var(--gold)', sColor: '#1A1405', ring: 'var(--gold)', iconBg: 'var(--goldSoft)', iconColor: 'var(--goldInk)', border: 'var(--gold)' },
+      { name: 'Europe Trip', icon: I.plane, saved: '$4,850', target: '$12,000', pct: '40%', off: (C * 0.596).toFixed(2), date: 'Jun 2027', mLabel: 'Needed / month', monthly: '$894', status: 'Behind', sIcon: I.alert, sBg: 'var(--negSoft)', sColor: 'var(--neg)', ring: 'var(--pri)', iconBg: 'var(--raised)', iconColor: 'var(--ink)', border: 'var(--line)' },
+      { name: 'Car Upgrade', icon: I.car, saved: '$7,200', target: '$30,000', pct: '24%', off: (C * 0.76).toFixed(2), date: 'Mar 2028', mLabel: 'Needed / month', monthly: '$1,341', status: 'On track', sIcon: I.check, sBg: 'var(--priSoft)', sColor: 'var(--pri)', ring: 'var(--pri)', iconBg: 'var(--raised)', iconColor: 'var(--ink)', border: 'var(--line)' }
+    ];
+    // chart: Nov 2025 (0) → Dec 2028 (37)
+    const W = 1000, H = 280, X = i => i / 37 * W, Y = v => H - v / 120000 * H;
+    const sv = SAVED.map((v, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+    const doneI = 33;
+    const pace = `M${X(11)},${Y(68400)} L${X(doneI)},${Y(120000)}`;
+    const req = `M${X(11)},${Y(68400)} L${X(37)},${Y(120000)}`;
+    const milestones = [[25, '$30k', 'Feb 2025', true], [50, '$60k', 'Aug 2026', true], [75, '$90k', 'Jun 2027', false], [100, '$120k', 'Aug 2028', false]].map(([p, v, w, hit], i) => ({
+      left: p + '%', pct: `${p}% · ${v}`, when: hit ? 'Reached ' + w : 'Est. ' + w, fill: hit ? 'var(--gold)' : 'var(--card)', color: hit ? 'var(--goldInk)' : 'var(--mute)',
+      tx: i === 3 ? '-100%' : '-50%', align: i === 3 ? 'right' : 'center'
+    }));
+    const months = ['Oct 2026', 'Sep 2026', 'Aug 2026', 'Aug 2026', 'Jul 2026', 'Jun 2026', 'May 2026', 'Apr 2026', 'Mar 2026', 'Feb 2026', 'Jan 2026', 'Dec 2025'];
+    const history = months.map((d, i) => ({ date: d, desc: i === 3 ? 'Tax return top-up' : 'Monthly transfer · Everyday → HISA', amt: i === 3 ? '+$3,200.00' : i === 2 ? '+$2,100.00' : '+$2,500.00' }));
+    const iconKeys = ['gift', 'house', 'plane', 'car', 'grad', 'shield'];
+    const set = k => e => this.setState(st => ({ f: { ...st.f, [k]: e.target.value }, errs: { ...st.errs, [k]: false } }));
+    return {
+      isGrid: !detail, isDetail: detail, goals,
+      openDetail: () => this.setState({ detail: true }), closeDetail: () => this.setState({ detail: false }),
+      savedLine: sv, savedArea: sv + ` L${X(11)},${H} L0,${H} Z`, paceLine: pace, reqLine: req,
+      todayX: (11 / 37 * 100).toFixed(2) + '%', doneX: (doneI / 37 * 100).toFixed(2) + '%', milestones, history,
+      addOpen: s.add, openAdd: () => this.setState({ add: true, errs: {} }), closeAdd: () => this.setState({ add: false }),
+      f: s.f, setName: set('name'), setTarget: set('target'), setCurrent: set('current'), setDate: set('date'),
+      scheme: this.props.theme === 'dark' ? 'dark' : 'light',
+      errName: !!s.errs.name, errTarget: !!s.errs.target, nameBorder: s.errs.name ? 'var(--neg)' : 'var(--line)', targetBorder: s.errs.target ? 'var(--neg)' : 'var(--line)',
+      prios: [1, 2, 3].map(p => ({ l: ['High', 'Medium', 'Low'][p - 1], bg: s.f.prio === p ? 'var(--card)' : 'transparent', color: s.f.prio === p ? 'var(--ink)' : 'var(--mute)', pick: () => this.setState(st => ({ f: { ...st.f, prio: p } })) })),
+      icons: iconKeys.map(k => ({ name: k, d: I[k], bg: s.f.icon === k ? 'var(--priSoft)' : 'var(--raised)', color: s.f.icon === k ? 'var(--pri)' : 'var(--mute)', border: s.f.icon === k ? 'var(--pri)' : 'var(--line)', pick: () => this.setState(st => ({ f: { ...st.f, icon: k } })) })),
+      saveGoal: () => {
+        const errs = { name: !s.f.name.trim(), target: !(parseFloat(String(s.f.target).replace(/[,$]/g, '')) > 0) };
+        if (errs.name || errs.target) { this.setState({ errs }); return; }
+        this.setState({ add: false, f: { name: '', target: '', current: '', date: '2027-12', prio: 2, icon: 'gift' } });
+        this.props.onToast && this.props.onToast(`Goal created · ${s.f.name}`);
+      },
+      exportCsv: () => this.props.onToast && this.props.onToast('Exported ledger_goals_2026-10-30.csv · 4 rows')
+    };
+  }
+}
+</script>
+</body>
+</html>

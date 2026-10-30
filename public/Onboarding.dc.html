@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="{{ rootStyle }}">
+  <div style="position:absolute;top:24px;left:28px;right:28px;display:flex;align-items:center;gap:12px;">
+    <div style="width:30px;height:30px;border-radius:8px;background:var(--pri);display:grid;place-items:center;"><div style="width:9px;height:9px;transform:rotate(45deg);background:var(--gold);"></div></div>
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:500;">{{ appName }}</div>
+    <div style="flex:1;"></div>
+    <button onClick="{{ toggleTheme }}" title="Toggle theme" style="width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--goldInk);display:grid;place-items:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="{{ themeIcon }}"></path></svg></button>
+  </div>
+
+  <div style="position:relative;width:560px;max-width:calc(100% - 40px);box-sizing:border-box;border-radius:20px;background:var(--card);border:1px solid var(--line);box-shadow:var(--sh);overflow:hidden;">
+    <div style="position:absolute;top:0;left:40px;right:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+    <div style="padding:40px 44px 8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <sc-for list="{{ dots }}" as="d" hint-placeholder-count="6"><span style="width:{{ d.w }};height:8px;border-radius:999px;background:{{ d.bg }};transition:all .3s;"></span></sc-for>
+        </div>
+        <span style="font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums;">Step {{ stepNo }} of 6</span>
+      </div>
+
+      <sc-if value="{{ s0 }}" hint-placeholder-val="{{ true }}">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--goldInk);">Welcome</div>
+        <h1 style="margin:10px 0 10px;font-family:'Playfair Display',serif;font-weight:500;font-size:36px;line-height:1.15;">A calm place for your money</h1>
+        <p style="margin:0 0 26px;font-size:15px;line-height:1.6;color:var(--mute);text-wrap:pretty;">Track spending, budgets, goals and investments in one private dashboard backed by your own Google Sheet. Start by naming your copy.</p>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">App name
+          <input value="{{ appName }}" onChange="{{ setAppName }}" style="height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font-family:'Playfair Display',serif;font-size:20px;outline:none;">
+        </label>
+      </sc-if>
+
+      <sc-if value="{{ s1 }}">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--goldInk);">Security</div>
+        <h1 style="margin:10px 0 10px;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;">Set your password</h1>
+        <p style="margin:0 0 22px;font-size:14px;line-height:1.6;color:var(--mute);">Your app will be on a public URL, so every page is protected. The password is hashed and checked on the server.</p>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Password<input type="password" value="{{ pw }}" onChange="{{ setPw }}" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:15px;outline:none;">
+            <div style="display:flex;gap:4px;margin-top:2px;"><sc-for list="{{ strength }}" as="b" hint-placeholder-count="4"><span style="flex:1;height:4px;border-radius:2px;background:{{ b }};"></span></sc-for></div>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Confirm password<input type="password" value="{{ pw2 }}" onChange="{{ setPw2 }}" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid {{ pw2Border }};background:var(--raised);color:var(--ink);font:inherit;font-size:15px;outline:none;">
+            <sc-if value="{{ pwMismatch }}"><span style="color:var(--neg);">Passwords don't match</span></sc-if>
+          </label>
+          <div style="font-size:12px;color:var(--mute);line-height:1.5;padding:12px 14px;border-radius:10px;background:var(--raised);">Deploying to Vercel? Set <span style="font-family:ui-monospace,monospace;color:var(--ink);">APP_PASSWORD_HASH</span> instead. The README explains how to reset it.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s2 }}">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--goldInk);">Profile</div>
+        <h1 style="margin:10px 0 22px;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;">About you</h1>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <label style="grid-column:span 2;display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Your name<input value="{{ name }}" onChange="{{ setName }}" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:15px;outline:none;"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Currency<select style="height:44px;padding:0 10px;border-radius:12px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;"><option>AUD · $</option><option>NZD · $</option><option>USD · $</option><option>GBP · £</option><option>EUR · €</option></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Financial year starts<select style="height:44px;padding:0 10px;border-radius:12px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;"><option>1 July</option><option>1 April</option><option>1 January</option></select></label>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s3 }}">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--goldInk);">Data</div>
+        <h1 style="margin:10px 0 10px;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;">Connect your Google Sheet</h1>
+        <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:var(--mute);">Copy the template, then paste its link. Your data stays in your own Google account.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <sc-for list="{{ sourceOpts }}" as="o" hint-placeholder-count="2">
+            <button onClick="{{ o.pick }}" style="display:flex;align-items:flex-start;gap:14px;padding:16px;border-radius:14px;border:1px solid {{ o.border }};background:{{ o.bg }};color:var(--ink);font:inherit;cursor:pointer;text-align:left;">
+              <span style="flex:none;margin-top:2px;width:16px;height:16px;border-radius:50%;border:{{ o.radio }};box-sizing:border-box;"></span>
+              <span><span style="display:block;font-size:15px;font-weight:500;">{{ o.l }}</span><span style="display:block;font-size:13px;color:var(--mute);margin-top:3px;">{{ o.d }}</span></span>
+            </button>
+          </sc-for>
+          <sc-if value="{{ useSheet }}">
+            <input placeholder="https://docs.google.com/spreadsheets/d/…" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:13px;outline:none;font-family:ui-monospace,monospace;">
+            <a href="#" style="font-size:13px;color:var(--pri);font-weight:500;">Copy the template sheet →</a>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s4 }}">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--goldInk);">Goals</div>
+        <h1 style="margin:10px 0 22px;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;">Add your first goal</h1>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+          <sc-for list="{{ goalChips }}" as="g" hint-placeholder-count="4"><button onClick="{{ g.pick }}" style="height:34px;padding:0 14px;border-radius:999px;border:1px solid {{ g.border }};background:{{ g.bg }};color:{{ g.color }};font:inherit;font-size:13px;cursor:pointer;">{{ g.l }}</button></sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <label style="grid-column:span 2;display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Goal name<input value="{{ goal }}" onChange="{{ setGoal }}" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:15px;outline:none;"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Target amount<input value="$120,000" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:15px;outline:none;font-variant-numeric:tabular-nums;"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mute);">Target date<input type="month" value="2028-12" style="height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;outline:none;color-scheme:{{ scheme }};"></label>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ s5 }}">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--goldInk);">Budget</div>
+        <h1 style="margin:10px 0 10px;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;">Set your monthly budget</h1>
+        <p style="margin:0 0 18px;font-size:14px;color:var(--mute);">Start with the big ones. You can fine-tune every category later.</p>
+        <div style="display:flex;flex-direction:column;">
+          <sc-for list="{{ budgets }}" as="b" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--line);">
+              <span style="flex:1;font-size:14px;">{{ b.l }}</span>
+              <input value="{{ b.v }}" style="width:110px;height:36px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:var(--raised);color:var(--ink);font:inherit;font-size:14px;text-align:right;outline:none;font-variant-numeric:tabular-nums;">
+            </div>
+          </sc-for>
+          <div style="display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line);font-size:14px;font-weight:500;"><span>Total</span><span style="font-variant-numeric:tabular-nums;">$4,170 / month</span></div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;padding:22px 44px 28px;margin-top:22px;">
+      <button onClick="{{ skip }}" style="all:unset;cursor:pointer;font-size:13px;color:var(--mute);">{{ skipLabel }}</button>
+      <div style="flex:1;"></div>
+      <sc-if value="{{ canBack }}"><button onClick="{{ back }}" style="height:42px;padding:0 16px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;cursor:pointer;">Back</button></sc-if>
+      <button onClick="{{ next }}" style="height:42px;padding:0 22px;border-radius:11px;border:0;background:var(--pri);color:var(--priInk);font:inherit;font-size:14px;font-weight:500;cursor:pointer;">{{ nextLabel }}</button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;step&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:5,&quot;tsType&quot;:&quot;number&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light' | 'dark'&quot;}}">
+const THEMES = {
+  light: { '--bg':'#F7F8F5','--card':'#FFFFFF','--raised':'#F4F5F1','--line':'rgba(17,21,17,0.08)','--ink':'#111511','--mute':'#5F6B63','--pri':'#0B6E4F','--priSoft':'#E8F3EE','--priInk':'#FFFFFF','--gold':'#C9A227','--goldInk':'#86680E','--goldSoft':'rgba(201,162,39,0.11)','--neg':'#B04A41','--negSoft':'#F8ECEA','--track':'#ECEEEA','--sh':'0 1px 2px rgba(17,21,17,0.04), 0 20px 60px rgba(17,21,17,0.08)' },
+  dark: { '--bg':'#0A0A0A','--card':'#141414','--raised':'#1C1C1C','--line':'rgba(255,255,255,0.08)','--ink':'#F5F5F0','--mute':'#9CA39E','--pri':'#10B981','--priSoft':'rgba(16,185,129,0.12)','--priInk':'#04140D','--gold':'#D4AF37','--goldInk':'#D4AF37','--goldSoft':'rgba(212,175,55,0.11)','--neg':'#E0796D','--negSoft':'rgba(224,121,109,0.12)','--track':'#242424','--sh':'none' }
+};
+
+class Component extends DCLogic {
+  state = { theme: null, step: null, appName: 'Ledger', pw: '', pw2: '', name: '', source: 'sheet', goal: 'House Deposit' };
+  renderVals() {
+    const s = this.state, theme = s.theme || this.props.theme || 'light', dark = theme === 'dark';
+    const step = s.step ?? (this.props.step || 0);
+    const go = n => this.setState({ step: n });
+    const finish = () => this.props.onFinish && this.props.onFinish();
+    const score = Math.min(4, (s.pw.length >= 8) + (s.pw.length >= 12) + (/[A-Z]/.test(s.pw) && /[a-z]/.test(s.pw)) + (/[0-9\W]/.test(s.pw)));
+    const sc = ['var(--neg)', 'var(--neg)', 'var(--gold)', 'var(--pri)', 'var(--pri)'][score];
+    const mismatch = s.pw2.length > 0 && s.pw2 !== s.pw;
+    return {
+      rootStyle: { ...THEMES[theme], position: 'relative', minHeight: '100vh', height: '100%', display: 'grid', placeItems: 'center', background: 'var(--bg)', color: 'var(--ink)', fontFamily: "'Geist', system-ui, sans-serif", padding: '100px 0 40px', boxSizing: 'border-box', transition: 'background-color .4s, color .4s' },
+      toggleTheme: () => { const t = dark ? 'light' : 'dark'; this.setState({ theme: t }); this.props.onTheme && this.props.onTheme(t); },
+      themeIcon: dark ? "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" : "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41",
+      appName: s.appName || 'Ledger', setAppName: e => this.setState({ appName: e.target.value }),
+      dots: [0, 1, 2, 3, 4, 5].map(i => ({ w: i === step ? '24px' : '8px', bg: i < step ? 'var(--gold)' : i === step ? 'var(--pri)' : 'var(--track)' })),
+      stepNo: String(step + 1),
+      s0: step === 0, s1: step === 1, s2: step === 2, s3: step === 3, s4: step === 4, s5: step === 5,
+      pw: s.pw, pw2: s.pw2, setPw: e => this.setState({ pw: e.target.value }), setPw2: e => this.setState({ pw2: e.target.value }),
+      strength: [0, 1, 2, 3].map(i => i < score ? sc : 'var(--track)'), pwMismatch: mismatch, pw2Border: mismatch ? 'var(--neg)' : 'var(--line)',
+      name: s.name, setName: e => this.setState({ name: e.target.value }),
+      sourceOpts: [['sheet', 'Connect my Google Sheet', 'Read and write to your own copy of the template'], ['demo', 'Continue with demo data', "Explore with Alex's sample data; connect later in Settings"]].map(([k, l, d]) => ({ l, d, border: s.source === k ? 'var(--pri)' : 'var(--line)', bg: s.source === k ? 'var(--priSoft)' : 'var(--card)', radio: s.source === k ? '5px solid var(--pri)' : '1.5px solid var(--mute)', pick: () => this.setState({ source: k }) })),
+      useSheet: s.source === 'sheet', scheme: dark ? 'dark' : 'light',
+      goalChips: ['House Deposit', 'Emergency Fund', 'Travel', 'New car'].map(l => ({ l, bg: s.goal === l ? 'var(--goldSoft)' : 'transparent', border: s.goal === l ? 'var(--gold)' : 'var(--line)', color: s.goal === l ? 'var(--goldInk)' : 'var(--ink)', pick: () => this.setState({ goal: l }) })),
+      goal: s.goal, setGoal: e => this.setState({ goal: e.target.value }),
+      budgets: [['Rent / mortgage', '$2,400'], ['Groceries', '$650'], ['Dining out', '$380'], ['Transport', '$220'], ['Utilities & internet', '$210'], ['Everything else', '$310']].map(([l, v]) => ({ l, v })),
+      canBack: step > 0, back: () => go(step - 1),
+      skipLabel: step === 0 ? 'Skip setup' : 'Skip this step',
+      skip: () => step === 0 || step === 5 ? finish() : go(step + 1),
+      nextLabel: step === 5 ? 'Open dashboard' : step === 0 ? 'Get started' : 'Continue',
+      next: () => { if (step === 1 && mismatch) return; step === 5 ? finish() : go(step + 1); }
+    };
+  }
+}
+</script>
+</body>
+</html>
