@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledger · Sign in</title>
+<script src="./ai-client.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>html,body{margin:0;min-height:100%}</style>
+</helmet>
+<div style="min-height:100vh;">
+  <dc-import name="Login" theme="{{ theme }}" mode="login" on-verify="{{ verify }}" on-unlock="{{ unlock }}" on-theme="{{ setTheme }}" hint-size="100%,100%"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+// Sign-in page: hosts the design's Login screen and checks the password with the server.
+class Component extends DCLogic {
+  state = { theme: (() => { try { return localStorage.getItem('ledger-theme') || 'light'; } catch (e) { return 'light'; } })() };
+  renderVals() {
+    return {
+      theme: this.state.theme,
+      verify: (pw, remember) => window.ledgerLogin(pw, remember),
+      unlock: () => {
+        const next = new URLSearchParams(location.search).get('next') || '/';
+        location.href = next.startsWith('/') && !next.startsWith('//') ? next : '/';
+      },
+      setTheme: t => { try { localStorage.setItem('ledger-theme', t); } catch (e) {} this.setState({ theme: t }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

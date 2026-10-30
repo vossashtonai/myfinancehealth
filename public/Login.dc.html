@@ -68,7 +68,9 @@ body{margin:0}
         <button type="button" onClick="{{ switchUser }}" style="all:unset;display:block;margin:14px auto 0;font-size:13px;color:var(--mute);cursor:pointer;">Log out instead</button>
       </sc-if>
     </div>
+    <sc-if value="{{ isDemo }}">
     <div style="margin-top:26px;font-size:12px;color:var(--mute);text-align:center;">Demo password: <span style="font-family:ui-monospace,monospace;color:var(--ink);">ledger</span></div>
+    </sc-if>
   </form>
 </div>
 </x-dc>
@@ -103,17 +105,26 @@ class Component extends DCLogic {
       rootStyle: { ...THEMES[theme], position: 'relative', minHeight: '100vh', height: '100%', display: 'grid', placeItems: 'center', background: 'var(--bg)', color: 'var(--ink)', fontFamily: "'Geist', system-ui, sans-serif", transition: 'background-color .4s, color .4s', padding: '40px 0', boxSizing: 'border-box' },
       toggleTheme: () => { const t = dark ? 'light' : 'dark'; this.setState({ theme: t }); this.props.onTheme && this.props.onTheme(t); },
       themeIcon: dark ? "M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" : "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41",
-      isLocked: mode === 'locked', isLogin: mode !== 'locked',
+      isLocked: mode === 'locked', isLogin: mode !== 'locked', isDemo: !this.props.onVerify,
       pwRef: this.pwRef, pw: s.pw, setPw: e => this.setState({ pw: e.target.value, err: cooling ? s.err : '' }),
       pwType: s.show ? 'text' : 'password', toggleShow: () => this.setState({ show: !s.show }), eyeIcon: s.show ? EYE_OFF : EYE, showTitle: s.show ? 'Hide password' : 'Show password',
       pwBorder: s.err ? 'var(--neg)' : 'var(--line)', hasErr: !!s.err, errText: s.err,
       shake: s.shakeN ? `${s.shakeN % 2 ? 'ledgerShakeA' : 'ledgerShakeB'} .45s ease` : 'none',
       remember: s.remember, toggleRemember: () => this.setState({ remember: !s.remember }), accent: dark ? '#10B981' : '#0B6E4F',
-      cooling, inputOp: cooling ? 0.5 : 1, btnText: cooling ? `Try again in ${s.cool}s` : 'Unlock',
+      cooling, inputOp: cooling ? 0.5 : 1, btnText: cooling ? `Try again in ${s.cool}s` : s.busy ? 'Checking…' : 'Unlock',
       switchUser: () => this.setState({ mode: 'login', pw: '', err: '' }),
-      submit: e => {
-        e.preventDefault(); if (cooling) return;
-        if (s.pw === 'ledger') { this.setState({ pw: '', err: '', fails: 0 }); this.props.onUnlock && this.props.onUnlock(); return; }
+      submit: async e => {
+        e.preventDefault(); if (cooling || s.busy) return;
+        // Verified by the server when hosted in the app (onVerify); the design canvas keeps its demo password.
+        let r;
+        if (this.props.onVerify) {
+          this.setState({ busy: true });
+          r = await this.props.onVerify(s.pw, s.remember);
+          this.setState({ busy: false });
+        } else r = { ok: s.pw === 'ledger', status: 401 };
+        if (r.ok) { this.setState({ pw: '', err: '', fails: 0 }); this.props.onUnlock && this.props.onUnlock(); return; }
+        if (r.status === 429) { this.startCool(5); this.setState(st => ({ cool: r.retryAfter || 60, shakeN: st.shakeN + 1 })); return; }
+        if (r.status !== 401) { this.setState(st => ({ err: r.error || 'Something went wrong, try again', shakeN: st.shakeN + 1 })); return; }
         const f = s.fails + 1;
         if (f >= 5) { this.startCool(f); this.setState(st => ({ shakeN: st.shakeN + 1 })); return; }
         this.setState(st => ({ fails: f, err: `Incorrect password · ${5 - f} attempt${5 - f === 1 ? '' : 's'} left`, shakeN: st.shakeN + 1 }));

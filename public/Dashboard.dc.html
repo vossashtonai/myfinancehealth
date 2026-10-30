@@ -590,7 +590,7 @@ a:hover{text-decoration:underline}
   </div>
 
   <sc-if value="{{ locked }}">
-    <div style="position:fixed;inset:0;z-index:80;"><dc-import name="Login" theme="{{ theme }}" mode="{{ lockMode }}" state="{{ loginState }}" on-unlock="{{ unlock }}" on-theme="{{ setTheme }}" hint-size="100%,100%"></dc-import></div>
+    <div style="position:fixed;inset:0;z-index:80;"><dc-import name="Login" theme="{{ theme }}" mode="{{ lockMode }}" state="{{ loginState }}" on-verify="{{ verifyPw }}" on-unlock="{{ unlock }}" on-theme="{{ setTheme }}" hint-size="100%,100%"></dc-import></div>
   </sc-if>
   <sc-if value="{{ onboarding }}">
     <div style="position:fixed;inset:0;z-index:80;"><dc-import name="Onboarding" theme="{{ theme }}" step="{{ onboardStep }}" on-finish="{{ closeOnboard }}" on-theme="{{ setTheme }}" hint-size="100%,100%"></dc-import></div>
@@ -841,7 +841,8 @@ class Component extends DCLogic {
       modalKey: e => { if (e.key === 'Escape') this.setState({ modal: false }); if (e.key === 'Enter' && (e.target.tagName || '').toLowerCase() === 'input') { e.preventDefault(); this.save(false); } },
       toast: this.toast, toastMsg: this.state.toastMsg, toastOp: this.state.toastOn ? 1 : 0, toastY: this.state.toastOn ? '0' : '12px',
       locked: !!this.state.lock, lockMode: this.state.lock || 'login', loginState: this.props.loginState || '',
-      unlock: () => this.setState({ lock: null }), doLock: () => this.setState({ lock: 'locked' }), doLogout: () => this.setState({ lock: 'login' }),
+      unlock: () => this.setState({ lock: null }), doLock: () => this.setState({ lock: 'locked' }), doLogout: () => { if (window.ledgerLogout) window.ledgerLogout(); else this.setState({ lock: 'login' }); },
+      verifyPw: window.ledgerLogin ? (pw, remember) => window.ledgerLogin(pw, remember) : undefined,
       onboarding: this.state.onboard, onboardStep: this.props.onboardStep || 0,
       openOnboard: () => this.setState({ onboard: true }), closeOnboard: () => this.setState({ onboard: false, page: 0 }),
       searchTick: this.state.searchTick,
